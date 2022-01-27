@@ -12,16 +12,19 @@ public class AdviceHandlerException {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorMessage> handlerNotFoundException(NotFoundException notFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(notFoundException.getMessage(), HttpStatus.NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorMessage(notFoundException.getMessage(), HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorMessage> handlerBusinessException(BusinessException businessException) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(businessException.getMessage(), HttpStatus.BAD_REQUEST));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessage(businessException.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> handlerException(Exception exception){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMessage(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorMessage(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 }

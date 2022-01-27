@@ -25,9 +25,4 @@ public class InboundOrderController {
             InboundOrderResponseDTO inboundOrderResponseDTO = service.save(inboundOrderRequestDTO, agentId);
             return ResponseEntity.created(null).body(inboundOrderResponseDTO);
     }
-
-    @GetMapping
-    public ResponseEntity<List<InboundOrder>> getAll(){
-        return ResponseEntity.ok().body(service.getAll());
-    }
 }

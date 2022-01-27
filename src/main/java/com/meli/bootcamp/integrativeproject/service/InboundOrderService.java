@@ -33,10 +33,6 @@ public class InboundOrderService {
         this.batchRepository = batchRepository;
     }
 
-    public List<InboundOrder> getAll() {
-        return inboundOrderRepository.findAll();
-    }
-
     public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId) throws NotFoundException, BusinessException {
             // Verifica existencia do armazem
             Warehouse warehouse = warehouseRepository.findById(inboundOrderRequestDTO.getWarehouseId()).orElse(null);
