@@ -1,15 +1,9 @@
 package com.meli.bootcamp.integrativeproject.service;
 
-import com.meli.bootcamp.integrativeproject.dto.request.BatchRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
-import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
-import com.meli.bootcamp.integrativeproject.dto.response.BatchResponseDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
-import com.meli.bootcamp.integrativeproject.repositories.AgentRepository;
-import com.meli.bootcamp.integrativeproject.repositories.InboundOrderRepository;
-import com.meli.bootcamp.integrativeproject.repositories.SectionRepository;
-import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
+import com.meli.bootcamp.integrativeproject.repositories.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,11 +20,14 @@ public class InboundOrderService {
 
     private AgentRepository agentRepository;
 
-    public InboundOrderService(InboundOrderRepository inboundOrderRepository, WarehouseRepository warehouseRepository, SectionRepository sectionRepository, AgentRepository agentRepository) {
+    private BatchRepository batchRepository;
+
+    public InboundOrderService(InboundOrderRepository inboundOrderRepository, WarehouseRepository warehouseRepository, SectionRepository sectionRepository, AgentRepository agentRepository, BatchRepository batchRepository) {
         this.inboundOrderRepository = inboundOrderRepository;
         this.warehouseRepository = warehouseRepository;
         this.sectionRepository = sectionRepository;
         this.agentRepository = agentRepository;
+        this.batchRepository = batchRepository;
     }
 
     public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId) {
@@ -87,6 +84,7 @@ public class InboundOrderService {
                 .section(section)
                 .products(products)
                 .build();
+        batch = batchRepository.save(batch);
 
         InboundOrder inboundOrder = InboundOrder.builder()
                 .agent(agent)

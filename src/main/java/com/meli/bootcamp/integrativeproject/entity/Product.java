@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,7 @@ public class Product {
     private LocalDate dueDate;
 
     @ManyToOne
+    @JsonIgnore
     private Batch batch;
 
     @Enumerated(EnumType.STRING)
