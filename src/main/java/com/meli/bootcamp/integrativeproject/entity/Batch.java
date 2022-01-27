@@ -28,6 +28,7 @@ public class Batch {
     private Section section;
 
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("batch")
     private List<Product> products;
 
     @OneToOne(mappedBy = "batch")

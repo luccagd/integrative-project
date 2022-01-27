@@ -33,74 +33,78 @@ public class InboundOrderService {
         this.batchRepository = batchRepository;
     }
 
-    public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId) {
-        // Verifica existencia do armazem
-        Warehouse warehouse = warehouseRepository.findById(inboundOrderRequestDTO.getWarehouseId()).orElse(null);
-        if (warehouse == null) {
-            throw new NotFoundException("WAREHOUSE NOT FOUND", HttpStatus.NOT_FOUND);
-        }
-
-        // Verifica representante
-        Agent agent = agentRepository.findById(agentId).orElse(null);
-        if (agent == null) {
-            throw new NotFoundException("AGENT NOT FOUND", HttpStatus.NOT_FOUND);
-        }
-
-        if (!warehouse.getAgent().getId().equals(agent.getId())) {
-            throw new BusinessException("AGENT ID IS NOT EQUAL", HttpStatus.BAD_REQUEST);
-        }
-
-        // Verificações do setor
-        Section section = sectionRepository.findById(inboundOrderRequestDTO.getSectionId()).orElse(null);
-        if (section == null) {
-            throw new NotFoundException("SECTION NOT FOUND", HttpStatus.NOT_FOUND);
-        }
-
-        List<Product> products =
-                inboundOrderRequestDTO.getBatchStock().getProducts().stream().map(productRequestDTO -> {
-                    if (!section.getCategory().equals(productRequestDTO.getCategory())) {
-                        throw new BusinessException("CATEGORY IS NOT EQUAL", HttpStatus.BAD_REQUEST);
-                    }
-
-                    Product product = Product.builder()
-                            .name(productRequestDTO.getName())
-                            .currentTemperature(productRequestDTO.getCurrentTemperature())
-                            .minimalTemperature(productRequestDTO.getMinimalTemperature())
-                            .quantity(productRequestDTO.getQuantity())
-                            .dueDate(productRequestDTO.getDueDate())
-                            .category(productRequestDTO.getCategory())
-                            .build();
-
-                    return product;
-                }).collect(Collectors.toList());
-
-        Integer batchSize = inboundOrderRequestDTO.getBatchStock().calculateBatchSize();
-        if (batchSize > section.calculateRemainingSize()) {
-            throw new BusinessException("BATCH IS BIGGER THAN SECTION SIZE", HttpStatus.BAD_REQUEST);
-        }
-
-        section.setTotalProducts(batchSize);
-
-
-        Batch batch = Batch.builder()
-                .batchNumber(inboundOrderRequestDTO.getBatchStock().getBatchNumber())
-                .section(section)
-                .products(products)
-                .build();
-        batch = batchRepository.save(batch);
-
-        InboundOrder inboundOrder = InboundOrder.builder()
-                .agent(agent)
-                .batch(batch)
-                .build();
-
-        inboundOrder = inboundOrderRepository.save(inboundOrder);
-
-        InboundOrderResponseDTO inboundOrderResponseDTO = InboundOrderResponseDTO.builder()
-                .orderDate(inboundOrder.getDateOrder())
-                .batchStock(inboundOrder.getBatch())
-                .build();
-
-        return inboundOrderResponseDTO;
+    public List<InboundOrder> getAll() {
+        return inboundOrderRepository.findAll();
     }
+
+    public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId) throws NotFoundException, BusinessException {
+            // Verifica existencia do armazem
+            Warehouse warehouse = warehouseRepository.findById(inboundOrderRequestDTO.getWarehouseId()).orElse(null);
+            if (warehouse == null) {
+                throw new NotFoundException("WAREHOUSE NOT FOUND");
+            }
+
+            // Verifica representante
+            Agent agent = agentRepository.findById(agentId).orElse(null);
+            if (agent == null) {
+                throw new NotFoundException("AGENT NOT FOUND");
+            }
+
+            if (!warehouse.getAgent().getId().equals(agent.getId())) {
+                throw new BusinessException("AGENT ID IS NOT EQUAL");
+            }
+
+            // Verificações do setor
+            Section section = sectionRepository.findById(inboundOrderRequestDTO.getSectionId()).orElse(null);
+            if (section == null) {
+                throw new NotFoundException("SECTION NOT FOUND");
+            }
+
+            List<Product> products =
+                    inboundOrderRequestDTO.getBatchStock().getProducts().stream().map(productRequestDTO -> {
+                        if (!section.getCategory().equals(productRequestDTO.getCategory())) {
+                            throw new BusinessException("PRODUCT CATEGORY IS NOT EQUAL TO SECTION CATEGORY");
+                        }
+
+                        Product product = Product.builder()
+                                .name(productRequestDTO.getName())
+                                .currentTemperature(productRequestDTO.getCurrentTemperature())
+                                .minimalTemperature(productRequestDTO.getMinimalTemperature())
+                                .quantity(productRequestDTO.getQuantity())
+                                .dueDate(productRequestDTO.getDueDate())
+                                .category(productRequestDTO.getCategory())
+                                .build();
+
+                        return product;
+                    }).collect(Collectors.toList());
+
+            Integer batchSize = inboundOrderRequestDTO.getBatchStock().calculateBatchSize();
+            if (batchSize > section.calculateRemainingSize()) {
+                throw new BusinessException("BATCH IS BIGGER THAN SECTION SIZE");
+            }
+
+            section.setTotalProducts(batchSize);
+
+
+            Batch batch = Batch.builder()
+                    .batchNumber(inboundOrderRequestDTO.getBatchStock().getBatchNumber())
+                    .section(section)
+                    .products(products)
+                    .build();
+            batch = batchRepository.save(batch);
+
+            InboundOrder inboundOrder = InboundOrder.builder()
+                    .agent(agent)
+                    .batch(batch)
+                    .build();
+
+            inboundOrder = inboundOrderRepository.save(inboundOrder);
+
+            InboundOrderResponseDTO inboundOrderResponseDTO = InboundOrderResponseDTO.builder()
+                    .orderDate(inboundOrder.getDateOrder())
+                    .batchStock(inboundOrder.getBatch())
+                    .build();
+
+            return inboundOrderResponseDTO;
+        }
 }

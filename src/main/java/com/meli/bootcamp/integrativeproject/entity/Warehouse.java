@@ -24,9 +24,10 @@ public class Warehouse {
     private String name;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties("warehouse")
     private List<Section> section;
 
     @OneToOne(mappedBy = "warehouse", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("warehouse")
     private Agent agent;
 }

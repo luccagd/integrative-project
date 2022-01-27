@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,5 +30,6 @@ public class InboundOrder {
 
     @OneToOne
     @JoinColumn(name = "batch_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("inboundOrder")
     private Batch batch;
 }

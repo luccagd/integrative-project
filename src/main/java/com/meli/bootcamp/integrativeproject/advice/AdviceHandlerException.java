@@ -4,27 +4,24 @@ import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class AdviceHandlerException {
 
-    @ExceptionHandler(value = NotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorMessage> handlerNotFoundException(NotFoundException notFoundException) {
-        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        return new ResponseEntity<>(new ErrorMessage(notFoundException.getMessage(), httpStatus), httpStatus);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(notFoundException.getMessage(), HttpStatus.NOT_FOUND));
     }
 
-    @ExceptionHandler(value = BusinessException.class)
+    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorMessage> handlerBusinessException(BusinessException businessException) {
-        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(new ErrorMessage(businessException.getMessage(), httpStatus), httpStatus);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(businessException.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> handlerException(Exception exception){
-        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        return new ResponseEntity<>(new ErrorMessage(exception.getMessage(), httpStatus), httpStatus);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMessage(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 }
