@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
+@Entity
 public class Warehouse {
 
     @Id

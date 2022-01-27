@@ -8,14 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
+@Entity
 public class Product {
 
     @Id

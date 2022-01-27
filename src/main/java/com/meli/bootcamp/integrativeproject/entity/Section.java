@@ -8,19 +8,21 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
+@Entity
 public class Section {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 100
     private Integer size;
 
+    // 1
     private Integer totalProducts;
 
     @Enumerated(EnumType.STRING)
@@ -33,7 +35,11 @@ public class Section {
         return size - totalProducts;
     }
 
-    public void setTotalProducts(Integer batchSize) {
+    public void increaseTotalProducts(Integer batchSize) {
         this.totalProducts += batchSize;
+    }
+
+    public void decreaseTotalProducts(Integer batchSize) {
+        this.totalProducts -= batchSize;
     }
 }

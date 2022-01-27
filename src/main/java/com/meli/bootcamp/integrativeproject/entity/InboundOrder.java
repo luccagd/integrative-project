@@ -25,6 +25,7 @@ public class InboundOrder {
     private LocalDateTime dateOrder;
 
     @ManyToOne
+    @JoinColumn(name = "agent_id")
     private Agent agent;
 
     @OneToOne
