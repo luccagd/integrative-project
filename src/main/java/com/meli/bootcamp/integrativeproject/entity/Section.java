@@ -1,6 +1,7 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
 import com.meli.bootcamp.integrativeproject.enums.Category;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Builder
 @Data
 @Entity
+@Table(name = "sections")
 public class Section {
 
     @Id

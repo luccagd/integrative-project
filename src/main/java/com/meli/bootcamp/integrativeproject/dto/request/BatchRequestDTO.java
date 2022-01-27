@@ -1,6 +1,5 @@
 package com.meli.bootcamp.integrativeproject.dto.request;
 
-import com.meli.bootcamp.integrativeproject.entity.Batch;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

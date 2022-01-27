@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Builder
 @Data
 @Entity
+@Table(name = "agents")
 public class Agent {
 
     @Id
