@@ -3,7 +3,10 @@ package com.meli.bootcamp.integrativeproject.service;
 import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
+import com.meli.bootcamp.integrativeproject.exception.BusinessException;
+import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,29 +37,29 @@ public class InboundOrderService {
         // Verifica existencia do armazem
         Warehouse warehouse = warehouseRepository.findById(inboundOrderRequestDTO.getWarehouseId()).orElse(null);
         if (warehouse == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("WAREHOUSE NOT FOUND", HttpStatus.NOT_FOUND);
         }
 
         // Verifica representante
         Agent agent = agentRepository.findById(agentId).orElse(null);
         if (agent == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("AGENT NOT FOUND", HttpStatus.NOT_FOUND);
         }
 
         if (!warehouse.getAgent().getId().equals(agent.getId())) {
-            throw new RuntimeException("");
+            throw new BusinessException("AGENT ID IS NOT EQUAL", HttpStatus.BAD_REQUEST);
         }
 
         // Verificações do setor
         Section section = sectionRepository.findById(inboundOrderRequestDTO.getSectionId()).orElse(null);
         if (section == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("SECTION NOT FOUND", HttpStatus.NOT_FOUND);
         }
 
         List<Product> products =
                 inboundOrderRequestDTO.getBatchStock().getProducts().stream().map(productRequestDTO -> {
                     if (!section.getCategory().equals(productRequestDTO.getCategory())) {
-                        throw new RuntimeException("");
+                        throw new BusinessException("CATEGORY IS NOT EQUAL", HttpStatus.BAD_REQUEST);
                     }
 
                     Product product = Product.builder()
@@ -73,7 +76,7 @@ public class InboundOrderService {
 
         Integer batchSize = inboundOrderRequestDTO.getBatchStock().calculateBatchSize();
         if (batchSize > section.calculateRemainingSize()) {
-            throw new RuntimeException("");
+            throw new BusinessException("BATCH IS BIGGER THAN SECTION SIZE", HttpStatus.BAD_REQUEST);
         }
 
         section.setTotalProducts(batchSize);
