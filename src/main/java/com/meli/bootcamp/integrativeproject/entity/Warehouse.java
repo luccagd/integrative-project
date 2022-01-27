@@ -24,6 +24,6 @@ public class Warehouse {
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
     private List<Section> section;
 
-    @OneToOne
+    @OneToOne(mappedBy = "warehouse", cascade = CascadeType.ALL)
     private Agent agent;
 }

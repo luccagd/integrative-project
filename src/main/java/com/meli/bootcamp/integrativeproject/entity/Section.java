@@ -19,13 +19,21 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long size;
+    private Integer size;
 
-    private Long totalProducts;
+    private Integer totalProducts;
 
     @Enumerated(EnumType.STRING)
     private Category category;
 
     @ManyToOne
     private Warehouse warehouse;
+
+    public Integer calculateRemainingSize() {
+        return size - totalProducts;
+    }
+
+    public void setTotalProducts(Integer batchSize) {
+        this.totalProducts += batchSize;
+    }
 }

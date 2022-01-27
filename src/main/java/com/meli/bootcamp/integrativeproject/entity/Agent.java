@@ -20,6 +20,6 @@ public class Agent {
 
     private String nome;
 
-    @OneToOne(mappedBy = "agent", cascade = CascadeType.ALL)
+    @OneToOne
     private Warehouse warehouse;
 }
