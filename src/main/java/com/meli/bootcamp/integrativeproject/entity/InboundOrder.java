@@ -6,21 +6,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Data
-public class Seller {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 
+public class InboundOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String name;
-
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
-    private List<Batch> batches;
+    @Column(name = "date_order")
+    private LocalDateTime dateOrder;
+    @ManyToOne
+    private Agent agent;
+    @OneToOne(mappedBy = "orderBatch", cascade = CascadeType.ALL)
+    private Batch batch;
 }
