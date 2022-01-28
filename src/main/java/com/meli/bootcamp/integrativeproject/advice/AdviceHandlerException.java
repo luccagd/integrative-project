@@ -22,9 +22,9 @@ public class AdviceHandlerException {
                 .body(new ErrorMessage(businessException.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
-    @ExceptionHandler(Exception.class)
+    /*@ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> handlerException(Exception exception){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorMessage(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
-    }
+    }*/
 }

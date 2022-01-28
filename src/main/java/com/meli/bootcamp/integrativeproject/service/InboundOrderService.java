@@ -102,6 +102,7 @@ public class InboundOrderService {
                     .dueDate(productRequestDTO.getDueDate())
                     .category(productRequestDTO.getCategory())
                     .batch(batch)
+                    .price(productRequestDTO.getPrice())
                     .build();
 
             products.add(product);

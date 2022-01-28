@@ -40,6 +40,9 @@ public class Product {
     @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
+    @Column(name = "price", nullable = false)
+    private Double price;
+
     @ManyToOne
     @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
