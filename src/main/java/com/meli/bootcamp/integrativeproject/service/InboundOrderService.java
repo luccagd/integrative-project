@@ -4,6 +4,8 @@ import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
+import com.meli.bootcamp.integrativeproject.exception.BusinessException;
+import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.*;
 import com.meli.bootcamp.integrativeproject.utils.GenerateRandomNumber;
 
@@ -37,32 +39,33 @@ public class InboundOrderService {
         this.productRepository = productRepository;
     }
 
-    public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId) {
+    public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId)
+            throws NotFoundException, BusinessException {
         // Verifica existencia do armazem
         Warehouse warehouse = warehouseRepository.findById(inboundOrderRequestDTO.getWarehouseId()).orElse(null);
         if (warehouse == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("WAREHOUSE NOT FOUND");
         }
 
         // Verifica representante
         Agent agent = agentRepository.findById(agentId).orElse(null);
         if (agent == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("AGENT NOT FOUND");
         }
 
         if (!warehouse.getAgent().getId().equals(agent.getId())) {
-            throw new RuntimeException("");
+            throw new BusinessException("AGENT ID IS NOT EQUAL");
         }
 
         // Verificações do setor
         Section section = sectionRepository.findById(inboundOrderRequestDTO.getSectionId()).orElse(null);
         if (section == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("SECTION NOT FOUND");
         }
 
         Integer batchSize = inboundOrderRequestDTO.getBatchStock().calculateBatchSize();
         if (batchSize > section.calculateRemainingSize()) {
-            throw new RuntimeException("");
+            throw new BusinessException("BATCH IS BIGGER THAN SECTION SIZE");
         }
 
         section.increaseTotalProducts(batchSize);
@@ -77,7 +80,7 @@ public class InboundOrderService {
         List<Product> products = new ArrayList<>();
         for (ProductRequestDTO productRequestDTO : inboundOrderRequestDTO.getBatchStock().getProducts()) {
             if (!section.getCategory().equals(productRequestDTO.getCategory())) {
-                throw new RuntimeException("");
+                throw new BusinessException("PRODUCT CATEGORY IS NOT EQUAL TO SECTION CATEGORY");
             }
 
             Product product = Product.builder()
@@ -116,20 +119,20 @@ public class InboundOrderService {
             Long productId) {
         InboundOrder inboundOrder = inboundOrderRepository.findById(inboundOrderId).orElse(null);
         if (inboundOrder == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("INBOUND_ORDER NOT FOUND");
         }
 
         Product findProduct = inboundOrder.getBatch().getProducts().stream().filter(product -> {
             return product.getId().equals(productId);
         }).findAny().orElse(null);
         if (findProduct == null) {
-            throw new RuntimeException("");
+            throw new NotFoundException("PRODUCT NOT FOUND");
         }
 
         int diffQuantity = productRequestDTO.getQuantity() - findProduct.getQuantity();
         if (diffQuantity > 0) {
             if (diffQuantity > inboundOrder.getBatch().getSection().calculateRemainingSize()) {
-                throw new RuntimeException("");
+                throw new BusinessException("SECTION CAPACITY EXCEEDED");
             }
 
             inboundOrder.getBatch().getSection().increaseTotalProducts(diffQuantity);
