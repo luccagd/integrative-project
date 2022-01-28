@@ -48,4 +48,8 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = true)
+    private Cart cart;
 }
