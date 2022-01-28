@@ -2,7 +2,9 @@ package com.meli.bootcamp.integrativeproject.service;
 
 import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
+import com.meli.bootcamp.integrativeproject.dto.response.BatchResponseDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
+import com.meli.bootcamp.integrativeproject.dto.response.ProductResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
@@ -28,15 +30,18 @@ public class InboundOrderService {
 
     private ProductRepository productRepository;
 
+    private SellerRepository sellerRepository;
+
     public InboundOrderService(InboundOrderRepository inboundOrderRepository, WarehouseRepository warehouseRepository,
             SectionRepository sectionRepository, AgentRepository agentRepository, BatchRepository batchRepository,
-            ProductRepository productRepository) {
+            ProductRepository productRepository, SellerRepository sellerRepository) {
         this.inboundOrderRepository = inboundOrderRepository;
         this.warehouseRepository = warehouseRepository;
         this.sectionRepository = sectionRepository;
         this.agentRepository = agentRepository;
         this.batchRepository = batchRepository;
         this.productRepository = productRepository;
+        this.sellerRepository = sellerRepository;
     }
 
     public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId)
@@ -68,11 +73,17 @@ public class InboundOrderService {
             throw new BusinessException("BATCH IS BIGGER THAN SECTION SIZE");
         }
 
+        Seller seller = sellerRepository.findById(inboundOrderRequestDTO.getSellerId()).orElse(null);
+        if (seller == null) {
+            throw new NotFoundException("SELLER NOT FOUND");
+        }
+
         section.increaseTotalProducts(batchSize);
 
         Batch batch = Batch.builder()
                 .batchNumber(GenerateRandomNumber.generateRandomBatchNumber())
                 .section(section)
+                .seller(seller)
                 .build();
 
         batchRepository.save(batch);
@@ -115,8 +126,8 @@ public class InboundOrderService {
         return inboundOrderResponseDTO;
     }
 
-    public InboundOrderResponseDTO update(ProductRequestDTO productRequestDTO, Long inboundOrderId,
-            Long productId) {
+    public BatchResponseDTO update(ProductRequestDTO productRequestDTO, Long inboundOrderId,
+                                   Long productId) {
         InboundOrder inboundOrder = inboundOrderRepository.findById(inboundOrderId).orElse(null);
         if (inboundOrder == null) {
             throw new NotFoundException("INBOUND_ORDER NOT FOUND");
@@ -151,11 +162,11 @@ public class InboundOrderService {
 
         inboundOrder = inboundOrderRepository.save(inboundOrder);
 
-        InboundOrderResponseDTO inboundOrderResponseDTO = InboundOrderResponseDTO.builder()
-                .orderDate(inboundOrder.getDateOrder())
-                .batchStock(inboundOrder.getBatch())
+        BatchResponseDTO batchResponseDTO = BatchResponseDTO.builder()
+                .batchNumber(inboundOrder.getBatch().getBatchNumber())
+                .products(inboundOrder.getBatch().getProducts())
                 .build();
 
-        return inboundOrderResponseDTO;
+        return batchResponseDTO;
     }
 }

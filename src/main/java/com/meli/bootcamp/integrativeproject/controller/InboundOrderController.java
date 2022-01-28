@@ -2,6 +2,7 @@ package com.meli.bootcamp.integrativeproject.controller;
 
 import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
+import com.meli.bootcamp.integrativeproject.dto.response.BatchResponseDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
 import com.meli.bootcamp.integrativeproject.service.InboundOrderService;
 
@@ -26,11 +27,11 @@ public class InboundOrderController {
     }
 
     @PutMapping(path = "/{inboundOrderId}/{productId}")
-    public ResponseEntity<Object> update(@RequestBody ProductRequestDTO productRequestDTO,
-            @PathVariable("inboundOrderId") Long inboundOrderId,
-            @PathVariable("productId") Long productId) {
-        service.update(productRequestDTO, inboundOrderId, productId);
+    public ResponseEntity<BatchResponseDTO> update(@RequestBody ProductRequestDTO productRequestDTO,
+                                                   @PathVariable("inboundOrderId") Long inboundOrderId,
+                                                   @PathVariable("productId") Long productId) {
+        BatchResponseDTO batchResponseDTO = service.update(productRequestDTO, inboundOrderId, productId);
 
-        return ResponseEntity.ok().body(productRequestDTO);
+        return ResponseEntity.created(null).body(batchResponseDTO);
     }
 }

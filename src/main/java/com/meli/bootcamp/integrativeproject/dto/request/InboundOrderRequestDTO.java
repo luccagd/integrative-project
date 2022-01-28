@@ -13,5 +13,7 @@ public class InboundOrderRequestDTO {
 
     private Long warehouseId;
 
+    private Long sellerId;
+
     private BatchRequestDTO batchStock;
 }
