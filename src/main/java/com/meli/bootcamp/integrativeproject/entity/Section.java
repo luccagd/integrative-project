@@ -21,16 +21,18 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 100
+    @Column(name = "size", nullable = false)
     private Integer size;
 
-    // 1
+    @Column(name = "total_products", nullable = false)
     private Integer totalProducts;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
     private Category category;
 
     @ManyToOne
+    @JoinColumn(name = "warehouse_id", referencedColumnName = "id", nullable = false)
     private Warehouse warehouse;
 
     public Integer calculateRemainingSize() {

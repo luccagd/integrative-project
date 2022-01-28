@@ -22,11 +22,12 @@ public class Warehouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Section> section;
+    private List<Section> sections;
 
     @OneToOne(mappedBy = "warehouse", cascade = CascadeType.ALL)
     private Agent agent;

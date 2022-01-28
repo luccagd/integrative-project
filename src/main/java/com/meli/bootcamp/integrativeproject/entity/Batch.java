@@ -23,9 +23,11 @@ public class Batch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "batch_number", nullable = false)
     private Integer batchNumber;
 
     @ManyToOne
+    @JoinColumn(name = "section_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Section section;
 
@@ -34,5 +36,5 @@ public class Batch {
 
     @OneToOne(mappedBy = "batch")
     @JsonIgnore
-    private InboundOrder inboundOrder;
+    private InboundOrder inboundOrder;    
 }

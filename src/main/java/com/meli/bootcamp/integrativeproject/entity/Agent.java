@@ -19,8 +19,10 @@ public class Agent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @OneToOne
+    @JoinColumn(name = "warehouse_id", referencedColumnName = "id", nullable = false)
     private Warehouse warehouse;
 }

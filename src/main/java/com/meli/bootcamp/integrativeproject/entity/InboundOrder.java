@@ -24,14 +24,14 @@ public class InboundOrder {
     private Long id;
 
     @CreationTimestamp
-    @Column(name = "date_order")
+    @Column(name = "date_order", nullable = false)
     private LocalDateTime dateOrder;
 
     @ManyToOne
-    @JoinColumn(name = "agent_id")
+    @JoinColumn(name = "agent_id", referencedColumnName = "id", nullable = false)
     private Agent agent;
 
     @OneToOne
-    @JoinColumn(name = "batch_id", referencedColumnName = "id")
+    @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
     private Batch batch;
 }
