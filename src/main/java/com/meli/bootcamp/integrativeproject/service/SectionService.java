@@ -1,9 +1,8 @@
 package com.meli.bootcamp.integrativeproject.service;
 
-import com.meli.bootcamp.integrativeproject.entity.Agent;
 import com.meli.bootcamp.integrativeproject.entity.Section;
-import com.meli.bootcamp.integrativeproject.repositories.AgentRepository;
 import com.meli.bootcamp.integrativeproject.repositories.SectionRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,23 +12,23 @@ public class SectionService {
 
     private SectionRepository sectionRepository;
 
-    public SectionService(SectionRepository sectionRepository){
+    public SectionService(SectionRepository sectionRepository) {
         this.sectionRepository = sectionRepository;
     }
 
-    public List<Section> findAll(){
+    public List<Section> findAll() {
         return sectionRepository.findAll();
     }
 
-    public Section findById(Long id){
+    public Section findById(Long id) {
         return sectionRepository.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
     }
 
-    public Section save(Section section){
+    public Section save(Section section) {
         return sectionRepository.save(section);
     }
 
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         sectionRepository.deleteById(id);
     }
 

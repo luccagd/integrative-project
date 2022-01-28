@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("fresh-products/inboundorder")
 public class InboundOrderController {
-
     private InboundOrderService service;
 
     public InboundOrderController(InboundOrderService service) {

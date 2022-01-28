@@ -10,8 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BatchRequestDTO {
-    private Integer batchNumber;
-
     private List<ProductRequestDTO> products;
 
     public Integer calculateBatchSize() {
