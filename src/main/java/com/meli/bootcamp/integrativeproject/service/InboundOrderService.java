@@ -5,6 +5,8 @@ import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
 import com.meli.bootcamp.integrativeproject.repositories.*;
+import com.meli.bootcamp.integrativeproject.utils.GenerateRandomNumber;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,7 +14,6 @@ import java.util.List;
 
 @Service
 public class InboundOrderService {
-
     private InboundOrderRepository inboundOrderRepository;
 
     private WarehouseRepository warehouseRepository;
@@ -59,10 +60,18 @@ public class InboundOrderService {
             throw new RuntimeException("");
         }
 
+        Integer batchSize = inboundOrderRequestDTO.getBatchStock().calculateBatchSize();
+        if (batchSize > section.calculateRemainingSize()) {
+            throw new RuntimeException("");
+        }
+
+        section.increaseTotalProducts(batchSize);
+
         Batch batch = Batch.builder()
-                .batchNumber(inboundOrderRequestDTO.getBatchStock().getBatchNumber())
+                .batchNumber(GenerateRandomNumber.generateRandomBatchNumber())
                 .section(section)
                 .build();
+
         batchRepository.save(batch);
 
         List<Product> products = new ArrayList<>();
@@ -82,17 +91,11 @@ public class InboundOrderService {
                     .build();
 
             products.add(product);
+
             productRepository.save(product);
         }
 
         batch.setProducts(products);
-
-        Integer batchSize = inboundOrderRequestDTO.getBatchStock().calculateBatchSize();
-        if (batchSize > section.calculateRemainingSize()) {
-            throw new RuntimeException("");
-        }
-
-        section.increaseTotalProducts(batchSize);
 
         InboundOrder inboundOrder = InboundOrder.builder()
                 .agent(agent)
