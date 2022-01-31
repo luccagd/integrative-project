@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.meli.bootcamp.integrativeproject.enums.Category;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -16,7 +13,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "products")
 public class Product {
@@ -51,8 +49,4 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = true)
-    private Cart cart;
 }

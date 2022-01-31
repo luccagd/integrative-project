@@ -22,6 +22,5 @@ import java.util.List;
 @Builder
 public class PurchaseOrderRequest {
     private Long buyerId;
-    private CartStatus status;
     private List<PurchaseOrderProductRequest> products;
 }

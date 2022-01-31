@@ -2,17 +2,15 @@ package com.meli.bootcamp.integrativeproject.entity;
 
 import com.meli.bootcamp.integrativeproject.enums.Category;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sections")
 public class Section {
