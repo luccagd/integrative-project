@@ -1,8 +1,16 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
-import javax.persistence.*;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.*;
+
+import java.util.Date;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "carts_products")
 public class CartProduct {
@@ -11,7 +19,7 @@ public class CartProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "cart_id", referencedColumnName = "id")
     private Cart cart;
 
@@ -21,10 +29,4 @@ public class CartProduct {
 
     @Column(name = "quantity")
     private Integer quantity;
-
-
-
-
-
-
 }

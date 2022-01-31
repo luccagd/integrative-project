@@ -12,10 +12,9 @@ import java.util.List;
 public class CartProductService {
 
      @Autowired
-    private CartProductRepository repository;
+     private CartProductRepository repository;
 
-    public   List <CartProduct> proc() {
+    public List<CartProduct> findByIdCart(Long id) {
         return  repository.findAll();
     }
-
 }

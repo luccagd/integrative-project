@@ -3,6 +3,7 @@ package com.meli.bootcamp.integrativeproject.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,7 +18,6 @@ public class Buyer {
     @Column(name = "name")
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = true)
-    private Cart cart;
+    @OneToMany(mappedBy = "buyer")
+    private List<Cart> carts;
 }

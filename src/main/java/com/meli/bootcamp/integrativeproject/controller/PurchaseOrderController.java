@@ -17,30 +17,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/fresh-products")
 public class PurchaseOrderController {
-    @Autowired
     private CartProductService cartProductService;
-    @Autowired
     private CartService cartService;
-    @Autowired
     private PurchaseOrderService purchaseOrderService;
 
-   /* public PurchaseOrderController(PurchaseOrderService purchaseOrderService, CartService cartService,CartProductService cartProductService){
+   public PurchaseOrderController(PurchaseOrderService purchaseOrderService, CartService cartService,CartProductService cartProductService){
         this.cartProductService = cartProductService;
         this.cartService = cartService;
-        this.purchaseOrderService = purchaseOrderService;
-
-
-}
-*/
+        this.purchaseOrderService = purchaseOrderService; 
+   }
 
     @PostMapping("/orders")
     public ResponseEntity<Object> save(@RequestBody PurchaseOrderRequest purchaseOrderRequest){
         return ResponseEntity.ok().body(purchaseOrderService.save(purchaseOrderRequest));
     }
 
-    @GetMapping("/orders/{id}")
-    public ResponseEntity<List<CartProduct>> listProducts(@PathVariable Long id){
-
-        return ResponseEntity.ok().body(cartProductService.proc());
+    @PutMapping("/orders/{idCart}")
+    public ResponseEntity<Object> put(@PathVariable Long id, @RequestBody PurchaseOrderRequest purchaseOrderRequest ){
+        return ResponseEntity.ok().body(null);
     }
 }

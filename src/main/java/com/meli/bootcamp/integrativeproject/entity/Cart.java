@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.meli.bootcamp.integrativeproject.enums.CartStatus;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -16,23 +18,24 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "carts")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "date", nullable = false)
-    private LocalDate date = LocalDate.now();
-
-    @ManyToMany
-    @JsonIgnoreProperties("cart")
-    private List<Product> products;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private CartStatus status;
+    private CartStatus status = CartStatus.ABERTO;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartProduct> cartsProducts;
+
+    @ManyToOne
+    @JoinColumn(name = "buyer_id", referencedColumnName = "id")
+    private Buyer buyer;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt = LocalDate.now();
 }

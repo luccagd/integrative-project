@@ -34,4 +34,5 @@ public class InboundOrderController {
 
         return ResponseEntity.created(null).body(batchResponseDTO);
     }
+
 }
