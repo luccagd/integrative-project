@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,5 +21,6 @@ public class Seller {
     private String name;
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = "seller")
     private List<Batch> batches;
 }

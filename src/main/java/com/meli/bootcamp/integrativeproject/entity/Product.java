@@ -2,6 +2,7 @@ package com.meli.bootcamp.integrativeproject.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 
 import lombok.*;
@@ -52,6 +53,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnoreProperties(value = "product")
     private List<CartProduct> cartProducts;
 
 }

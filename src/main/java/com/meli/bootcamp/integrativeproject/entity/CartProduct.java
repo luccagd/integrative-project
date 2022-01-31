@@ -2,12 +2,8 @@ package com.meli.bootcamp.integrativeproject.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.*;
 
-import java.util.Date;
 
 @Getter
 @Setter

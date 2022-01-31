@@ -4,7 +4,6 @@ import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.BatchResponseDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
-import com.meli.bootcamp.integrativeproject.dto.response.ProductResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;

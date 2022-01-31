@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,5 +20,6 @@ public class Buyer {
     private String name;
 
     @OneToMany(mappedBy = "buyer")
+    @JsonIgnoreProperties(value = "buyer")
     private List<Cart> carts;
 }

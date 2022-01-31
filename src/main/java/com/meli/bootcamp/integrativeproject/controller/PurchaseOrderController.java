@@ -1,14 +1,9 @@
 package com.meli.bootcamp.integrativeproject.controller;
 
-import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.PurchaseOrderRequest;
-import com.meli.bootcamp.integrativeproject.entity.CartProduct;
-import com.meli.bootcamp.integrativeproject.entity.Product;
 import com.meli.bootcamp.integrativeproject.service.CartProductService;
 import com.meli.bootcamp.integrativeproject.service.CartService;
 import com.meli.bootcamp.integrativeproject.service.PurchaseOrderService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
