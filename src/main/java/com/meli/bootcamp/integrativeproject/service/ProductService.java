@@ -3,6 +3,7 @@ package com.meli.bootcamp.integrativeproject.service;
 import com.meli.bootcamp.integrativeproject.entity.Product;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 import com.meli.bootcamp.integrativeproject.exception.InvalidEnumException;
+import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.ProductRepository;
 
 import org.springframework.stereotype.Service;
@@ -28,7 +29,12 @@ public class ProductService {
             throw new InvalidEnumException();
         }
 
-        return productRepository.findAllByCategory(categoryEnum);
+        List<Product> products = productRepository.findAllByCategory(categoryEnum);
+        if (products.isEmpty()) {
+            throw new NotFoundException("No products found for the indicated category");
+        }
+
+        return products;
     }
 
     public Product findById(Long id) {
