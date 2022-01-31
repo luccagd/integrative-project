@@ -8,7 +8,9 @@ import com.meli.bootcamp.integrativeproject.repositories.ProductRepository;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -32,6 +34,29 @@ public class ProductService {
         List<Product> products = productRepository.findAllByCategory(categoryEnum);
         if (products.isEmpty()) {
             throw new NotFoundException("No products found for the indicated category");
+        }
+
+        return products;
+    }
+
+    public List<Product> findAllByName(String name) {
+        List<Product> products = productRepository.findAllByName(name);
+        if (products.isEmpty()) {
+            throw new NotFoundException("No products found for the given name");
+        }
+
+        return products;
+    }
+
+    public List<Product> findAllByNameAndDueDate(String name) {
+        List<Product> products = findAllByName(name);
+
+        products = products.stream().filter(product ->
+                product.getDueDate().compareTo(LocalDate.now().plusWeeks(3)) > 0
+        ).collect(Collectors.toList());
+
+        if (products.isEmpty()) {
+            throw new NotFoundException("No products found within the due date for the given name");
         }
 
         return products;
