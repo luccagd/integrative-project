@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.meli.bootcamp.integrativeproject.enums.Category;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -17,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "products")
 public class Product {

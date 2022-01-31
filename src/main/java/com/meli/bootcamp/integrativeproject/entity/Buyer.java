@@ -1,12 +1,11 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -15,7 +14,7 @@ public class Buyer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
-    @Column(name = "Buyer")
+    @Column(name = "name")
     private String name;
 
     @OneToOne
