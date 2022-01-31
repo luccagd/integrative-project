@@ -34,8 +34,6 @@ public class CartService {
 
     public List<Product> productsByOrder(Long id) {
         return findById(id).getProducts();
+
     }
-
-
 }
-

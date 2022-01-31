@@ -25,11 +25,15 @@ public class Cart {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+
+    @ManyToMany
     @JsonIgnoreProperties("cart")
     private List<Product> products;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private CartStatus status;
+
+    @OneToMany(mappedBy = "cart")
+    private List<CartProduct> cartsProducts;
 }

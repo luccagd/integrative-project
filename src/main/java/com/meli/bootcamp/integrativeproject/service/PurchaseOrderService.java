@@ -41,7 +41,7 @@ public class PurchaseOrderService {
             if(product.getQuantity() > newProduct.getQuantity())
                 throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
 
-            totalPrice.add(new BigDecimal(newProduct.getPrice() * product.getQuantity());
+            totalPrice.add(new BigDecimal(newProduct.getPrice() * product.getQuantity()));
             addToCart(buyerRepository.getById(request.getBuyerId()), newProduct, product.getQuantity());
             updateSection(newProduct.getBatch().getSection(), product.getQuantity());
             newProduct.setQuantity(newProduct.getQuantity() - product.getQuantity());

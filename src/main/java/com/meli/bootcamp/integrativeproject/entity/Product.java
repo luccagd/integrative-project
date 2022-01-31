@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -52,7 +53,7 @@ public class Product {
     @Column(name = "category", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = true)
-    private Cart cart;
+    @OneToMany(mappedBy = "product")
+    private List<CartProduct> cartProducts;
+
 }
