@@ -22,9 +22,13 @@ public class Warehouse {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "warehouse")
     @JsonIgnoreProperties(value = "warehouse")
-    private List<Section> sections;
+    private List<WarehouseSection> warehouseSections;
+
+    @OneToMany(mappedBy = "warehouse")
+    @JsonIgnoreProperties(value = "warehouse")
+    private List<WarehouseSellers> warehouseSellers;
 
     @OneToOne(mappedBy = "warehouse", cascade = CascadeType.ALL)
     private Agent agent;

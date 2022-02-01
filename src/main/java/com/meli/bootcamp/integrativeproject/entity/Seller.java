@@ -23,4 +23,8 @@ public class Seller {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = "seller")
     private List<Batch> batches;
+
+    @OneToMany(mappedBy = "seller")
+    @JsonIgnoreProperties(value = "seller")
+    private List<WarehouseSellers> warehouseSellers;
 }

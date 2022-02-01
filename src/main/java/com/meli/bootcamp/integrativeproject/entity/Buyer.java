@@ -14,14 +14,16 @@ import java.util.List;
 @Entity
 @Table(name = "buyers")
 public class Buyer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long Id;
+
     @Column(name = "name")
     private String name;
 
     @OneToMany(mappedBy = "buyer")
-    @JsonIgnoreProperties(value = "buyer")
+    @JsonIgnore
     private List<Cart> carts;
 }

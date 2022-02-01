@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "batchs")
+@Table(name = "batches")
 public class Batch {
 
     @Id
@@ -31,7 +31,6 @@ public class Batch {
 
     @ManyToOne
     @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
-
     private Seller seller;
 
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL)
