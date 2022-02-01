@@ -35,10 +35,14 @@ public class PurchaseOrderController {
         return ResponseEntity.ok().body(purchaseOrderService.save(purchaseOrderRequest));
     }
 
-    @GetMapping("/orders/{id}")
-    public ResponseEntity<List<CartProductDto>> put(@PathVariable  Long id){
+    @PutMapping("/orders/{id}")
+    public ResponseEntity<Object> put(@PathVariable Long id, @RequestBody PurchaseOrderRequest purchaseOrderRequest ){
+        return ResponseEntity.ok().body(purchaseOrderService.put(id, purchaseOrderRequest));
+    }
 
-        return ResponseEntity.ok().body(cartProductService.getjoininfo(id));
+    @GetMapping("/teste/{id}")
+    public ResponseEntity<Object> findById(@PathVariable Long id){
+        return ResponseEntity.ok().body(purchaseOrderService.findById(id));
     }
 }
 

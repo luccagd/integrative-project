@@ -31,7 +31,7 @@ public class Cart {
     private CartStatus status = CartStatus.ABERTO;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties(value = "cart")
     private List<CartProduct> cartsProducts;
     @ManyToOne
     @JoinColumn(name = "buyer_id", referencedColumnName = "id")
