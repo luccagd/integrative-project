@@ -22,6 +22,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -52,6 +53,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<CartProduct> cartProducts;
 
 }

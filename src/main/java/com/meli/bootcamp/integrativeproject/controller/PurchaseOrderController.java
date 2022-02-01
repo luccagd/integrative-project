@@ -2,6 +2,7 @@ package com.meli.bootcamp.integrativeproject.controller;
 
 import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.PurchaseOrderRequest;
+import com.meli.bootcamp.integrativeproject.dto.response.CartProductDto;
 import com.meli.bootcamp.integrativeproject.entity.CartProduct;
 import com.meli.bootcamp.integrativeproject.entity.Product;
 import com.meli.bootcamp.integrativeproject.service.CartProductService;
@@ -12,6 +13,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -32,8 +35,10 @@ public class PurchaseOrderController {
         return ResponseEntity.ok().body(purchaseOrderService.save(purchaseOrderRequest));
     }
 
-    @PutMapping("/orders/{idCart}")
-    public ResponseEntity<Object> put(@PathVariable Long id, @RequestBody PurchaseOrderRequest purchaseOrderRequest ){
-        return ResponseEntity.ok().body(null);
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<List<CartProductDto>> put(@PathVariable  Long id){
+
+        return ResponseEntity.ok().body(cartProductService.getjoininfo(id));
     }
 }
+

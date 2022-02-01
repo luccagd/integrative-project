@@ -26,15 +26,15 @@ public class Batch {
 
     @ManyToOne
     @JoinColumn(name = "section_id", referencedColumnName = "id", nullable = false)
-    @JsonIgnore
     private Section section;
 
     @ManyToOne
     @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
-    @JsonIgnore
+
     private Seller seller;
 
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Product> products;
 
     @OneToOne(mappedBy = "batch")
