@@ -10,6 +10,8 @@ import com.meli.bootcamp.integrativeproject.repositories.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
 
 
 @Service
@@ -56,11 +58,8 @@ public class PurchaseOrderService {
         }).sum();
 
         buyerCart.setStatus(CartStatus.FECHADO);
-
         buyerRepository.save(buyer);
-
         cartRepository.save(buyerCart);
-
 
         return PurchaseOrderResponse.builder()
                 .totalPrice(BigDecimal.valueOf(totalPurchase))
@@ -84,8 +83,44 @@ public class PurchaseOrderService {
         cartProductRepository.save(cartProduct);
     }
 
-    public void put(Long id, PurchaseOrderRequest request){
-        CartProduct cartProduct = cartProductRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Cart is not found".toUpperCase()));
+    public PurchaseOrderResponse put(Long id, PurchaseOrderRequest request){
+        List<CartProduct> cartProductList = cartProductRepository.findAll();
+
+        Double totalPurchase = request.getProducts().stream().mapToDouble(requestProduct -> {
+
+            Product product = productRepository.findById(requestProduct.getProductId()).orElseThrow( () -> new NotFoundException("Product not found".toUpperCase()));
+
+            if(requestProduct.getQuantity() <= 0)
+                throw new BusinessException("Quantity less than 1".toUpperCase());
+            if(!(cartProductList.stream().anyMatch(cartProduct -> cartProduct.getCart().getId().equals(id))))
+                throw new BusinessException("Cart not found".toUpperCase());
+
+            for (CartProduct cartProduct : cartProductList) {
+
+                if (cartProduct.getCart().getId().equals(id) && cartProduct.getProduct().getId().equals(requestProduct.getProductId())) {
+                    Integer diff = cartProduct.getQuantity() - requestProduct.getQuantity();
+
+                    if(product.getQuantity() + diff < 0)
+                        throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
+
+                    product.setQuantity(product.getQuantity() + diff);
+                    product.getBatch().getSection().increaseTotalProducts(diff);
+                    cartProduct.setQuantity(requestProduct.getQuantity());
+                    productRepository.save(product);
+                    cartProductRepository.save(cartProduct);
+                    break;
+                }
+            }
+
+            return product.getPrice() * requestProduct.getQuantity();
+        }).sum();
+
+            return PurchaseOrderResponse.builder()
+                                        .totalPrice(BigDecimal.valueOf(totalPurchase))
+                                        .build();
+    }
+
+    public CartProduct findById(Long id){
+            return cartProductRepository.findById(id).orElseThrow( () -> new NotFoundException("NOT FOUND"));
     }
 }

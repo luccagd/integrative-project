@@ -30,6 +30,7 @@ public class Cart {
     private CartStatus status = CartStatus.ABERTO;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = "cart")
     private List<CartProduct> cartsProducts;
 
     @ManyToOne
