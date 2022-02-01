@@ -32,4 +32,8 @@ public class Warehouse {
 
     @OneToOne(mappedBy = "warehouse", cascade = CascadeType.ALL)
     private Agent agent;
+
+    @OneToMany(mappedBy = "warehouse")
+    @JsonIgnoreProperties(value = "warehouse")
+    private List<Batch> batches;
 }

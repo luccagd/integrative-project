@@ -20,7 +20,7 @@ public class PurchaseOrderController {
         this.purchaseOrderService = purchaseOrderService; 
    }
 
-    @PostMapping("/orders")
+    /*@PostMapping("/orders")
     public ResponseEntity<Object> save(@RequestBody PurchaseOrderRequest purchaseOrderRequest){
         return ResponseEntity.ok().body(purchaseOrderService.save(purchaseOrderRequest));
     }
@@ -33,6 +33,6 @@ public class PurchaseOrderController {
     @GetMapping("/teste/{id}")
     public ResponseEntity<Object> findById(@PathVariable Long id){
         return ResponseEntity.ok().body(purchaseOrderService.findById(id));
-    }
+    }*/
 }
 

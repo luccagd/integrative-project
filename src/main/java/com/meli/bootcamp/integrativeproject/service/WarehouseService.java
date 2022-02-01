@@ -1,8 +1,11 @@
 package com.meli.bootcamp.integrativeproject.service;
 
+import com.meli.bootcamp.integrativeproject.dto.response.WarehouseProductResponse;
 import com.meli.bootcamp.integrativeproject.entity.Warehouse;
+import com.meli.bootcamp.integrativeproject.entity.WarehouseSection;
 import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
 
+import com.meli.bootcamp.integrativeproject.repositories.WarehouseSectionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +14,9 @@ import java.util.List;
 public class WarehouseService {
 
     private WarehouseRepository warehouseRepository;
+    private WarehouseSectionRepository warehouseSectionRepository;
 
-    public WarehouseService(WarehouseRepository warehouseRepository) {
+    public WarehouseService(WarehouseRepository warehousepepository) {
         this.warehouseRepository = warehouseRepository;
     }
 
@@ -31,4 +35,9 @@ public class WarehouseService {
     public void deleteById(Long id) {
         warehouseRepository.deleteById(id);
     }
+
+   /* public WarehouseProductResponse findAllProductsByName(String name) {
+        return warehouseSectionRepository.findByN
+}*/
+
 }

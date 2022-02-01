@@ -68,16 +68,16 @@ public class InboundOrderService {
         }
 
         Integer batchSize = inboundOrderRequestDTO.getBatchStock().calculateBatchSize();
-        if (batchSize > section.calculateRemainingSize()) {
+        /*if (batchSize > section.calculateRemainingSize()) {
             throw new BusinessException("BATCH IS BIGGER THAN SECTION SIZE");
-        }
+        }*/
 
         Seller seller = sellerRepository.findById(inboundOrderRequestDTO.getSellerId()).orElse(null);
         if (seller == null) {
             throw new NotFoundException("SELLER NOT FOUND");
         }
 
-        section.increaseTotalProducts(batchSize);
+      //  section.increaseTotalProducts(batchSize);
 
         Batch batch = Batch.builder()
                 .batchNumber(GenerateRandomNumber.generateRandomBatchNumber())
@@ -141,7 +141,7 @@ public class InboundOrderService {
         }
 
         int diffQuantity = productRequestDTO.getQuantity() - findProduct.getQuantity();
-        if (diffQuantity > 0) {
+        /*if (diffQuantity > 0) {
             if (diffQuantity > inboundOrder.getBatch().getSection().calculateRemainingSize()) {
                 throw new BusinessException("SECTION CAPACITY EXCEEDED");
             }
@@ -153,7 +153,7 @@ public class InboundOrderService {
         if (diffQuantity < 0) {
             inboundOrder.getBatch().getSection().decreaseTotalProducts(diffQuantity);
             findProduct.setQuantity(productRequestDTO.getQuantity());
-        }
+        }*/
 
         findProduct.setName(productRequestDTO.getName());
         findProduct.setCurrentTemperature(productRequestDTO.getCurrentTemperature());

@@ -29,7 +29,7 @@ public class PurchaseOrderService {
         this.cartProductRepository = cartProductRepository;
     }
 
-    public PurchaseOrderResponse save(PurchaseOrderRequest request) {
+    /*public PurchaseOrderResponse save(PurchaseOrderRequest request) {
         Buyer buyer = buyerRepository.findById(request.getBuyerId())
                 .orElseThrow(() -> new NotFoundException("Buyer Id is not found".toUpperCase()));
 
@@ -120,5 +120,5 @@ public class PurchaseOrderService {
 
     public CartProduct findById(Long id){
             return cartProductRepository.findById(id).orElseThrow( () -> new NotFoundException("NOT FOUND"));
-    }
+    }*/
 }
