@@ -4,14 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonKey;
 import com.meli.bootcamp.integrativeproject.enums.CartStatus;
-import com.meli.bootcamp.integrativeproject.enums.Category;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -31,8 +26,9 @@ public class Cart {
     private CartStatus status = CartStatus.ABERTO;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties(value = "cart")
+    @JsonIgnoreProperties (value = "cart")
     private List<CartProduct> cartsProducts;
+
     @ManyToOne
     @JoinColumn(name = "buyer_id", referencedColumnName = "id")
     private Buyer buyer;

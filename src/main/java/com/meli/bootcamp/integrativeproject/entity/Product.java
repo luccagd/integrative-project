@@ -54,7 +54,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product")
-    @JsonIgnoreProperties("product")
+    @JsonIgnoreProperties(value = "product")
     private List<CartProduct> cartProducts;
 
 }
