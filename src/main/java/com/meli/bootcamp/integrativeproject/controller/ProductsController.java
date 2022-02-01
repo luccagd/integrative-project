@@ -1,8 +1,8 @@
 package com.meli.bootcamp.integrativeproject.controller;
 
+import com.meli.bootcamp.integrativeproject.dto.response.ProductBatchResponseDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.ProductResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.Product;
-import com.meli.bootcamp.integrativeproject.enums.Category;
 import com.meli.bootcamp.integrativeproject.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +31,12 @@ public class ProductsController {
         List<Product> products = service.findAllByCategory(category);
 
         return ResponseEntity.ok(ProductResponseDTO.entityListToDtoList(products));
+    }
+
+    @GetMapping("/list/byName")
+    public ResponseEntity<List<ProductBatchResponseDTO>> findAllByNameAndDueDate(@RequestParam String name, @RequestParam(required = false) String orderBy) {
+        List<Product> products = service.findAllByNameAndDueDate(name, orderBy);
+
+        return ResponseEntity.ok(ProductBatchResponseDTO.entityListToDtoList(products));
     }
 }

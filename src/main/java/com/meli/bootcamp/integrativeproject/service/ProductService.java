@@ -2,13 +2,18 @@ package com.meli.bootcamp.integrativeproject.service;
 
 import com.meli.bootcamp.integrativeproject.entity.Product;
 import com.meli.bootcamp.integrativeproject.enums.Category;
+import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.InvalidEnumException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.ProductRepository;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -37,6 +42,33 @@ public class ProductService {
         return products;
     }
 
+    public List<Product> findAllByName(String name) {
+        List<Product> products = productRepository.findAllByName(name);
+        if (products.isEmpty()) {
+            throw new NotFoundException("No products found for the given name");
+        }
+
+        return products;
+    }
+
+    public List<Product> findAllByNameAndDueDate(String name, String orderBy) {
+        List<Product> products = findAllByName(name);
+
+        products = products.stream().filter(product ->
+                product.getDueDate().compareTo(LocalDate.now().plusWeeks(3)) > 0
+        ).collect(Collectors.toList());
+
+        if (products.isEmpty()) {
+            throw new NotFoundException("No products found within the due date for the given name");
+        }
+
+        if (orderBy != null) {
+            sortList(products, orderBy);
+        }
+
+        return products;
+    }
+
     public Product findById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
     }
@@ -57,5 +89,21 @@ public class ProductService {
         }
 
         return null;
+    }
+
+    private void sortList(List<Product> products, String orderBy) {
+        switch (orderBy) {
+            case "L":
+                Collections.sort(products, Comparator.comparingInt(o -> o.getBatch().getBatchNumber()));
+                break;
+            case "C":
+                Collections.sort(products, Comparator.comparingInt(o -> o.getQuantity()));
+                break;
+            case "F":
+                Collections.sort(products, Comparator.comparing(Product::getDueDate));
+                break;
+            default:
+                throw new BusinessException("Valid values for sorting are L, C or F");
+        }
     }
 }
