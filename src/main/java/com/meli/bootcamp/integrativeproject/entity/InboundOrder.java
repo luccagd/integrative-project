@@ -29,7 +29,11 @@ public class InboundOrder {
     @JoinColumn(name = "agent_id", referencedColumnName = "id", nullable = false)
     private Agent agent;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
     private Batch batch;
+
+    @ManyToOne
+    @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
+    private Seller seller;
 }

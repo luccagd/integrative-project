@@ -37,7 +37,7 @@ public class Batch {
     @JsonIgnoreProperties (value = "batch")
     private List<Product> products;
 
-    @OneToOne(mappedBy = "batch")
-    @JsonIgnore
-    private InboundOrder inboundOrder;    
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id", referencedColumnName = "id", nullable = false)
+    private Warehouse warehouse;
 }
