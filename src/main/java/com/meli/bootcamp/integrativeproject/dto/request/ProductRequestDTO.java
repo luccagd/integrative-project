@@ -2,6 +2,7 @@ package com.meli.bootcamp.integrativeproject.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.meli.bootcamp.integrativeproject.entity.Product;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 
 import lombok.AllArgsConstructor;
@@ -27,6 +28,18 @@ public class ProductRequestDTO {
     private LocalDate dueDate;
 
     private Category category;
+
     private Double price;
 
+    public static Product toEntity(ProductRequestDTO productRequestDTO) {
+        return Product.builder()
+                .name(productRequestDTO.getName())
+                .currentTemperature(productRequestDTO.getCurrentTemperature())
+                .minimalTemperature(productRequestDTO.getMinimalTemperature())
+                .quantity(productRequestDTO.getQuantity())
+                .dueDate(productRequestDTO.getDueDate())
+                .category(productRequestDTO.getCategory())
+                .price(productRequestDTO.getPrice())
+                .build();
+    }
 }

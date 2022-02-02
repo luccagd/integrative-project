@@ -1,7 +1,5 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -36,10 +34,6 @@ public class Batch {
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL)
     @JsonIgnoreProperties (value = "batch")
     private List<Product> products;
-
-    @OneToOne(mappedBy = "batch")
-    @JsonIgnore
-    private InboundOrder inboundOrder;
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id", referencedColumnName = "id", nullable = false)

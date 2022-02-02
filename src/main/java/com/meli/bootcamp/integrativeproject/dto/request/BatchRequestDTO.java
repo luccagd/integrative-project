@@ -12,7 +12,7 @@ import java.util.List;
 public class BatchRequestDTO {
     private List<ProductRequestDTO> products;
 
-    public Integer calculateBatchSize() {
+    public Integer calculateProductsQuantityInTheBatch() {
         return products.stream().mapToInt(product -> product.getQuantity()).sum();
     }
 }
