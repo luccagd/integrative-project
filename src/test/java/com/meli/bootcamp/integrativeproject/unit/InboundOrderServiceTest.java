@@ -3,8 +3,11 @@ package com.meli.bootcamp.integrativeproject.unit;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.meli.bootcamp.integrativeproject.dto.request.BatchRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
+import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
+import com.meli.bootcamp.integrativeproject.enums.Category;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.InboundOrderRepository;
@@ -17,6 +20,7 @@ import org.mockito.Mock;
 
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -103,11 +107,8 @@ public class InboundOrderServiceTest {
     @Test
     public void shouldBeThrowIfWarehouseNotHaveTheGivenSectionWhenTrySave() {
         var sellerIdExistent = 1L;
-
         var warehouseIdExistent = 1L;
-
         var sectionIdExistent = 1L;
-
         var agentId = 1L;
 
         var request = makeFakeInboundOrderRequestDTO();
@@ -142,8 +143,56 @@ public class InboundOrderServiceTest {
         assertEquals("Warehouse dont have the given section", exception.getMessage());
     }
 
+    @Test
+    public void shouldBeThrowIfProductCategoryIsNotEqualSectionCategoryWhenTrySave() {
+        var sellerIdExistent = 1L;
+        var warehouseIdExistent = 1L;
+        var sectionIdExistent = 1L;
+        var agentId = 1L;
+
+        var request = makeFakeInboundOrderRequestDTO();
+        request.setSellerId(sellerIdExistent);
+        request.setWarehouseId(warehouseIdExistent);
+        request.setSectionId(sectionIdExistent);
+
+        var fakeSeller = makeFakeSeller();
+
+        var fakeAgent = makeFakeAgent();
+        fakeAgent.setId(1L);
+
+        var fakeSection = makeFakeSection();
+        fakeSection.setId(1L);
+        fakeSection.setCategory(Category.CONGELADO);
+
+        var fakeWarehouseSection = makeFakeWarehouseSection();
+        fakeWarehouseSection.setSection(fakeSection);
+
+        var fakeWarehouse = makeFakeWarehouse();
+        fakeWarehouse.setAgent(fakeAgent);
+        fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection));
+
+        when(sellerRepository.findById(request.getSellerId())).thenReturn(Optional.of(fakeSeller));
+        when(warehouseRepository.findById(request.getWarehouseId())).thenReturn(Optional.of(fakeWarehouse));
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request, agentId));
+
+        assertEquals("Product category is not equal to section category", exception.getMessage());
+    }
+
+    private ProductRequestDTO makeFakeProductRequestDTO() {
+        return new ProductRequestDTO("Any Product", 1.0, 1.0, 10, LocalDate.of(2022, 10, 10), Category.FRESCO, 10.00);
+    }
+
+    private BatchRequestDTO makeFakeBatchRequestDTO() {
+        return new BatchRequestDTO(Arrays.asList(makeFakeProductRequestDTO()));
+    }
+
     private InboundOrderRequestDTO makeFakeInboundOrderRequestDTO() {
-        return new InboundOrderRequestDTO();
+        InboundOrderRequestDTO inboundOrderRequestDTO = new InboundOrderRequestDTO();
+
+        inboundOrderRequestDTO.setBatchStock(makeFakeBatchRequestDTO());
+
+        return inboundOrderRequestDTO;
     }
 
     private Seller makeFakeSeller() {
