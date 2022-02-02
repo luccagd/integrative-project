@@ -255,4 +255,16 @@ public class InboundOrderServiceTest {
         assertEquals("Tilápia", response.getBatchStock().getProducts().get(0).getName());
         assertNotNull(response.getOrderDate());
     }
+
+    @Test
+    public void shouldBeThrowIfInboundOrderNotExistsWhenTryUpdate() {
+        var inboundOrderIdNotExistent = 1L;
+        var productIdExistent = 1L;
+
+        var request = InboundOrderServiceMocks.makeFakeProductRequestDTO(Category.FRESCO);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> service.update(request, inboundOrderIdNotExistent, productIdExistent));
+
+        assertEquals("Inbound order not found for the given id", exception.getMessage());
+    }
 }
