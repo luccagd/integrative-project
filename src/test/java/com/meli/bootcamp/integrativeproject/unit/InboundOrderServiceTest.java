@@ -267,4 +267,27 @@ public class InboundOrderServiceTest {
 
         assertEquals("Inbound order not found for the given id", exception.getMessage());
     }
+
+    @Test
+    public void shouldBeThrowIfTheGivenInboundOrderNotHaveTheProductWhenTryUpdate() {
+        var inboundOrderIdExistent = 1L;
+        var productIdNotExistent = 999L;
+
+        var request = InboundOrderServiceMocks.makeFakeProductRequestDTO(Category.FRESCO);
+
+        var fakeProduct = InboundOrderServiceMocks.makeFakeProduct();
+        fakeProduct.setName("Salsicha");
+
+        var fakeBatch = InboundOrderServiceMocks.makeFakeBatch();
+        fakeBatch.setProducts(Arrays.asList(fakeProduct));
+
+        var fakeInboundOrder = InboundOrderServiceMocks.makeFakeInboundOrder();
+        fakeInboundOrder.setBatch(fakeBatch);
+
+        when(inboundOrderRepository.findById(inboundOrderIdExistent)).thenReturn(Optional.of(fakeInboundOrder));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> service.update(request, inboundOrderIdExistent, productIdNotExistent));
+
+        assertEquals("Product not found for the given id", exception.getMessage());
+    }
 }
