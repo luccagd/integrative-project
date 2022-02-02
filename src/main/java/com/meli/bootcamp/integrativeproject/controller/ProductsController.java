@@ -39,4 +39,9 @@ public class ProductsController {
 
         return ResponseEntity.ok(ProductBatchResponseDTO.entityListToDtoList(products));
     }
+
+    @GetMapping(value = "/warehouse")
+    public ResponseEntity<Object> getProductQuantityByName(@RequestParam(name = "query_type") String name){
+        return ResponseEntity.ok().body(service.findAllByNameInWarehouse(name));
+    }
 }

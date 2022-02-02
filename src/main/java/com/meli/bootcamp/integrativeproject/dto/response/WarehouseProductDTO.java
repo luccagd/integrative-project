@@ -8,6 +8,6 @@ import lombok.*;
 @Setter
 @Builder
 public class WarehouseProductDTO {
-    private String warehouseCode;
+    private Long warehouseCode;
     private Integer totalQuantity;
 }

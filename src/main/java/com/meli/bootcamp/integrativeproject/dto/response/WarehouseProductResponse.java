@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -10,6 +11,9 @@ import java.util.List;
 @Setter
 @Builder
 public class WarehouseProductResponse {
+
     private String productId;
-    private List<WarehouseProductDTO> warehouses;
+
+    @JsonProperty(value = "warehouses")
+    private List<WarehouseProductDTO> productsDTO;
 }

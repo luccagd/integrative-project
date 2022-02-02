@@ -15,10 +15,4 @@ public class WarehouseController {
     @Autowired
     private WarehouseService warehouseService;
 
-
-
-  /*  @GetMapping(value = "/warehouse")
-    public ResponseEntity<Object> getProductQuantityByName(@RequestParam(name = "query_type") String name){
-        return ResponseEntity.ok().body(warehouseService.findAllProductsByName(name));
-    }*/
 }

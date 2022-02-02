@@ -12,8 +12,6 @@ public class CartProductService {
      @Autowired
      private CartProductRepository repository;
 
-
-
     public List<CartProductDto> getjoininfo(Long id) {
 
      return repository.findByCart_Id(id);

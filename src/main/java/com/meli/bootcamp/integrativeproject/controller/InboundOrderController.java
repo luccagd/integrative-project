@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("fresh-products/inboundorder")
 public class InboundOrderController {
-    private InboundOrderService service;
+
+    /*private InboundOrderService service;
 
     public InboundOrderController(InboundOrderService service) {
         this.service = service;
@@ -33,6 +34,6 @@ public class InboundOrderController {
         BatchResponseDTO batchResponseDTO = service.update(productRequestDTO, inboundOrderId, productId);
 
         return ResponseEntity.created(null).body(batchResponseDTO);
-    }
+    }*/
 
 }
