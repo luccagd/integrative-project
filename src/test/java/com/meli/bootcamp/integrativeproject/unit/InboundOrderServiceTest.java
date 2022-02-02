@@ -3,9 +3,6 @@ package com.meli.bootcamp.integrativeproject.unit;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.meli.bootcamp.integrativeproject.dto.request.BatchRequestDTO;
-import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
-import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
@@ -14,13 +11,13 @@ import com.meli.bootcamp.integrativeproject.repositories.InboundOrderRepository;
 import com.meli.bootcamp.integrativeproject.repositories.SellerRepository;
 import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
 import com.meli.bootcamp.integrativeproject.service.InboundOrderService;
+import com.meli.bootcamp.integrativeproject.unit.mocks.InboundOrderServiceMocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
@@ -48,10 +45,9 @@ public class InboundOrderServiceTest {
     @Test
     public void shouldBeThrowIfSellerNotExistsWhenTrySave() {
         var sellerIdNotExistent = 1L;
-
         var agentId = 1L;
 
-        var request = makeFakeInboundOrderRequestDTO();
+        var request = InboundOrderServiceMocks.makeFakeInboundOrderRequestDTO();
         request.setSellerId(sellerIdNotExistent);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> service.save(request, agentId));
@@ -62,13 +58,12 @@ public class InboundOrderServiceTest {
     @Test
     public void shouldBeThrowIfWarehouseNotExistsWhenTrySave() {
         var sellerIdExistent = 1L;
-
         var agentId = 1L;
 
-        var request = makeFakeInboundOrderRequestDTO();
+        var request = InboundOrderServiceMocks.makeFakeInboundOrderRequestDTO();
         request.setSellerId(sellerIdExistent);
 
-        var fakeSeller = makeFakeSeller();
+        var fakeSeller = InboundOrderServiceMocks.makeFakeSeller();
 
         when(sellerRepository.findById(request.getSellerId())).thenReturn(Optional.of(fakeSeller));
 
@@ -80,27 +75,25 @@ public class InboundOrderServiceTest {
     @Test
     public void shouldBeThrowIfAgentNotBelongToWarehouseWhenTrySave() {
         var sellerIdExistent = 1L;
-
         var warehouseIdExistent = 1L;
+        var agentIdNotBelongToWarehouse = 2L;
 
-        var agentId = 1L;
-
-        var request = makeFakeInboundOrderRequestDTO();
+        var request = InboundOrderServiceMocks.makeFakeInboundOrderRequestDTO();
         request.setSellerId(sellerIdExistent);
         request.setWarehouseId(warehouseIdExistent);
 
-        var fakeAgent = makeFakeAgent();
-        fakeAgent.setId(2L);
+        var fakeAgent = InboundOrderServiceMocks.makeFakeAgent();
+        fakeAgent.setId(1L);
 
-        var fakeSeller = makeFakeSeller();
+        var fakeSeller = InboundOrderServiceMocks.makeFakeSeller();
 
-        var fakeWarehouse = makeFakeWarehouse();
+        var fakeWarehouse = InboundOrderServiceMocks.makeFakeWarehouse();
         fakeWarehouse.setAgent(fakeAgent);
 
         when(sellerRepository.findById(request.getSellerId())).thenReturn(Optional.of(fakeSeller));
         when(warehouseRepository.findById(request.getWarehouseId())).thenReturn(Optional.of(fakeWarehouse));
 
-        BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request, agentId));
+        BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request, agentIdNotBelongToWarehouse));
 
         assertEquals("Agent does not belong to the given warehouse", exception.getMessage());
     }
@@ -109,32 +102,28 @@ public class InboundOrderServiceTest {
     public void shouldBeThrowIfWarehouseNotHaveTheGivenSectionWhenTrySave() {
         var sellerIdExistent = 1L;
         var warehouseIdExistent = 1L;
-        var sectionIdExistent = 1L;
+        var sectionIdThatNotBelongToAnyWarehouse = 1L;
         var agentId = 1L;
 
-        var request = makeFakeInboundOrderRequestDTO();
+        var request = InboundOrderServiceMocks.makeFakeInboundOrderRequestDTO();
         request.setSellerId(sellerIdExistent);
         request.setWarehouseId(warehouseIdExistent);
-        request.setSectionId(sectionIdExistent);
+        request.setSectionId(sectionIdThatNotBelongToAnyWarehouse);
 
-        var fakeSeller = makeFakeSeller();
+        var fakeSeller = InboundOrderServiceMocks.makeFakeSeller();
 
-        var fakeAgent = makeFakeAgent();
+        var fakeAgent = InboundOrderServiceMocks.makeFakeAgent();
         fakeAgent.setId(1L);
 
-        var fakeSection = makeFakeSection();
+        var fakeSection = InboundOrderServiceMocks.makeFakeSection();
         fakeSection.setId(2L);
-        var fakeSection2 = makeFakeSection();
-        fakeSection2.setId(2L);
 
-        var fakeWarehouseSection = makeFakeWarehouseSection();
+        var fakeWarehouseSection = InboundOrderServiceMocks.makeFakeWarehouseSection();
         fakeWarehouseSection.setSection(fakeSection);
-        var fakeWarehouseSection2 = makeFakeWarehouseSection();
-        fakeWarehouseSection2.setSection(fakeSection2);
 
-        var fakeWarehouse = makeFakeWarehouse();
+        var fakeWarehouse = InboundOrderServiceMocks.makeFakeWarehouse();
         fakeWarehouse.setAgent(fakeAgent);
-        fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection, fakeWarehouseSection2));
+        fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection));
 
         when(sellerRepository.findById(request.getSellerId())).thenReturn(Optional.of(fakeSeller));
         when(warehouseRepository.findById(request.getWarehouseId())).thenReturn(Optional.of(fakeWarehouse));
@@ -150,25 +139,25 @@ public class InboundOrderServiceTest {
         var warehouseIdExistent = 1L;
         var sectionIdExistent = 1L;
         var agentId = 1L;
+        var differentCategoryInRelationToRequest = Category.REFRIGERADO;
 
-        var request = makeFakeInboundOrderRequestDTO();
+        var request = InboundOrderServiceMocks.makeFakeInboundOrderRequestDTO();
         request.setSellerId(sellerIdExistent);
         request.setWarehouseId(warehouseIdExistent);
         request.setSectionId(sectionIdExistent);
+        request.setBatchStock(InboundOrderServiceMocks.makeFakeBatchRequestDTO(Category.FRESCO));
 
-        var fakeSeller = makeFakeSeller();
+        var fakeSeller = InboundOrderServiceMocks.makeFakeSeller();
 
-        var fakeAgent = makeFakeAgent();
-        fakeAgent.setId(1L);
+        var fakeAgent = InboundOrderServiceMocks.makeFakeAgent();
 
-        var fakeSection = makeFakeSection();
-        fakeSection.setId(1L);
-        fakeSection.setCategory(Category.CONGELADO);
+        var fakeSection = InboundOrderServiceMocks.makeFakeSection();
+        fakeSection.setCategory(differentCategoryInRelationToRequest);
 
-        var fakeWarehouseSection = makeFakeWarehouseSection();
+        var fakeWarehouseSection = InboundOrderServiceMocks.makeFakeWarehouseSection();
         fakeWarehouseSection.setSection(fakeSection);
 
-        var fakeWarehouse = makeFakeWarehouse();
+        var fakeWarehouse = InboundOrderServiceMocks.makeFakeWarehouse();
         fakeWarehouse.setAgent(fakeAgent);
         fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection));
 
@@ -187,26 +176,25 @@ public class InboundOrderServiceTest {
         var sectionIdExistent = 1L;
         var agentId = 1L;
 
-        var request = makeFakeInboundOrderRequestDTO();
+        var request = InboundOrderServiceMocks.makeFakeInboundOrderRequestDTO();
         request.setSellerId(sellerIdExistent);
         request.setWarehouseId(warehouseIdExistent);
         request.setSectionId(sectionIdExistent);
+        request.setBatchStock(InboundOrderServiceMocks.makeFakeBatchRequestDTO(Category.FRESCO));
 
-        var fakeSeller = makeFakeSeller();
+        var fakeSeller = InboundOrderServiceMocks.makeFakeSeller();
 
-        var fakeAgent = makeFakeAgent();
-        fakeAgent.setId(1L);
+        var fakeAgent = InboundOrderServiceMocks.makeFakeAgent();
 
-        var fakeSection = makeFakeSection();
-        fakeSection.setId(1L);
+        var fakeSection = InboundOrderServiceMocks.makeFakeSection();
         fakeSection.setCategory(Category.FRESCO);
 
-        var fakeWarehouseSection = makeFakeWarehouseSection();
+        var fakeWarehouseSection = InboundOrderServiceMocks.makeFakeWarehouseSection();
         fakeWarehouseSection.setSection(fakeSection);
         fakeWarehouseSection.setSize(10);
-        fakeWarehouseSection.setTotalProducts(5);
+        fakeWarehouseSection.setTotalProducts(9);
 
-        var fakeWarehouse = makeFakeWarehouse();
+        var fakeWarehouse = InboundOrderServiceMocks.makeFakeWarehouse();
         fakeWarehouse.setAgent(fakeAgent);
         fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection));
 
@@ -225,41 +213,36 @@ public class InboundOrderServiceTest {
         var sectionIdExistent = 1L;
         var agentId = 1L;
 
-        var request = makeFakeInboundOrderRequestDTO();
+        var request = InboundOrderServiceMocks.makeFakeInboundOrderRequestDTO();
         request.setSellerId(sellerIdExistent);
         request.setWarehouseId(warehouseIdExistent);
         request.setSectionId(sectionIdExistent);
+        request.setBatchStock(InboundOrderServiceMocks.makeFakeBatchRequestDTO(Category.FRESCO));
 
-        var fakeSeller = makeFakeSeller();
+        var fakeSeller = InboundOrderServiceMocks.makeFakeSeller();
 
-        var fakeAgent = makeFakeAgent();
-        fakeAgent.setId(1L);
+        var fakeAgent = InboundOrderServiceMocks.makeFakeAgent();
 
-        var fakeSection = makeFakeSection();
-        fakeSection.setId(1L);
+        var fakeSection = InboundOrderServiceMocks.makeFakeSection();
         fakeSection.setCategory(Category.FRESCO);
 
-        var fakeWarehouseSection = makeFakeWarehouseSection();
+        var fakeWarehouseSection = InboundOrderServiceMocks.makeFakeWarehouseSection();
         fakeWarehouseSection.setSection(fakeSection);
         fakeWarehouseSection.setSize(10);
         fakeWarehouseSection.setTotalProducts(0);
 
-        var fakeWarehouse = makeFakeWarehouse();
+        var fakeWarehouse = InboundOrderServiceMocks.makeFakeWarehouse();
         fakeWarehouse.setAgent(fakeAgent);
         fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection));
 
-        var fakeProduct = makeFakeProduct();
+        var fakeProduct = InboundOrderServiceMocks.makeFakeProduct();
         fakeProduct.setName("Tilápia");
-        fakeProduct.setCurrentTemperature(1.0);
-        fakeProduct.setMinimalTemperature(1.0);
-        fakeProduct.setQuantity(10);
-        fakeProduct.setDueDate(LocalDate.now());
         fakeProduct.setCategory(Category.FRESCO);
 
-        var fakeBatch = makeFakeBatch();
+        var fakeBatch = InboundOrderServiceMocks.makeFakeBatch();
         fakeBatch.setProducts(Arrays.asList(fakeProduct));
 
-        var fakeInboundOrder = makeFakeInboundOrder();
+        var fakeInboundOrder = InboundOrderServiceMocks.makeFakeInboundOrder();
         fakeInboundOrder.setDateOrder(LocalDateTime.now());
         fakeInboundOrder.setBatch(fakeBatch);
 
@@ -271,53 +254,5 @@ public class InboundOrderServiceTest {
 
         assertEquals("Tilápia", response.getBatchStock().getProducts().get(0).getName());
         assertNotNull(response.getOrderDate());
-    }
-
-    private ProductRequestDTO makeFakeProductRequestDTO() {
-        return new ProductRequestDTO("Any Product", 1.0, 1.0, 10, LocalDate.of(2022, 10, 10), Category.FRESCO, 10.00);
-    }
-
-    private BatchRequestDTO makeFakeBatchRequestDTO() {
-        return new BatchRequestDTO(Arrays.asList(makeFakeProductRequestDTO()));
-    }
-
-    private InboundOrderRequestDTO makeFakeInboundOrderRequestDTO() {
-        InboundOrderRequestDTO inboundOrderRequestDTO = new InboundOrderRequestDTO();
-
-        inboundOrderRequestDTO.setBatchStock(makeFakeBatchRequestDTO());
-
-        return inboundOrderRequestDTO;
-    }
-
-    private Seller makeFakeSeller() {
-        return new Seller();
-    }
-
-    private Warehouse makeFakeWarehouse() {
-        return new Warehouse();
-    }
-
-    private Agent makeFakeAgent() {
-        return new Agent();
-    }
-
-    private WarehouseSection makeFakeWarehouseSection() {
-        return new WarehouseSection();
-    }
-
-    private Section makeFakeSection() {
-        return new Section();
-    }
-
-    private InboundOrder makeFakeInboundOrder() {
-        return new InboundOrder();
-    }
-
-    private Batch makeFakeBatch() {
-        return new Batch();
-    }
-
-    private Product makeFakeProduct() {
-        return new Product();
     }
 }
