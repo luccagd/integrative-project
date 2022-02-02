@@ -4,6 +4,7 @@ import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.ProductRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.BatchResponseDTO;
 import com.meli.bootcamp.integrativeproject.dto.response.InboundOrderResponseDTO;
+import com.meli.bootcamp.integrativeproject.dto.response.ProductResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.*;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
@@ -14,6 +15,7 @@ import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
 import com.meli.bootcamp.integrativeproject.utils.GenerateRandomNumber;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +69,7 @@ public class InboundOrderService {
 
         return InboundOrderResponseDTO.builder()
                 .orderDate(inboundOrder.getDateOrder())
-                .batchStock(inboundOrder.getBatch())
+                .batchStock(BatchResponseDTO.toDTO(inboundOrder.getBatch()))
                 .build();
     }
 
@@ -99,7 +101,7 @@ public class InboundOrderService {
     }
 
     private void validateIfAgentBelongToWarehouse(Long agentIdFromWarehouse, Long agentIdFromRequest) {
-        if (!agentIdFromWarehouse.equals(agentIdFromWarehouse)) {
+        if (!agentIdFromWarehouse.equals(agentIdFromRequest)) {
             throw new BusinessException("Agent does not belong to the given warehouse");
         }
     }
@@ -131,6 +133,64 @@ public class InboundOrderService {
     }
 
     public BatchResponseDTO update(ProductRequestDTO productRequestDTO, Long inboundOrderId, Long productId) {
-        return null;
+        doUpdateValidations(productRequestDTO, inboundOrderId, productId);
+
+        InboundOrder inboundOrder = inboundOrderRepository.findById(inboundOrderId).get();
+        Product productFromInboundOrder = getProductFromInboundOrder(inboundOrder, productId);
+
+        Long warehouseId = inboundOrder.getBatch().getWarehouse().getId();
+        Long sectionId = inboundOrder.getBatch().getSection().getId();
+        WarehouseSection warehouseSection = inboundOrderRepository.findWarehouseSectionByWarehouseId(warehouseId, sectionId);
+
+        int productQuantityDifference = productRequestDTO.getQuantity() - productFromInboundOrder.getQuantity();
+        if (productQuantityDifference > 0) {
+            if (productQuantityDifference > warehouseSection.calculateRemainingSize()) {
+                throw new BusinessException("Section capacity exceeded");
+            }
+
+            warehouseSection.increaseTotalProducts(productQuantityDifference);
+            productFromInboundOrder.setQuantity(productRequestDTO.getQuantity());
+        }
+
+        if (productQuantityDifference < 0) {
+            warehouseSection.decreaseTotalProducts(productQuantityDifference);
+            productFromInboundOrder.setQuantity(productRequestDTO.getQuantity());
+        }
+
+        productFromInboundOrder.setName(productRequestDTO.getName());
+        productFromInboundOrder.setCurrentTemperature(productRequestDTO.getCurrentTemperature());
+        productFromInboundOrder.setMinimalTemperature(productRequestDTO.getMinimalTemperature());
+        productFromInboundOrder.setDueDate(productRequestDTO.getDueDate());
+
+        inboundOrder = inboundOrderRepository.save(inboundOrder);
+
+        BatchResponseDTO batchResponseDTO = BatchResponseDTO.builder()
+                .batchNumber(inboundOrder.getBatch().getBatchNumber())
+                .products(ProductResponseDTO.entityListToDtoList(inboundOrder.getBatch().getProducts()))
+                .build();
+
+        return batchResponseDTO;
+    }
+
+    public void doUpdateValidations(ProductRequestDTO productRequestDTO, Long inboundOrderId, Long productId) {
+        InboundOrder inboundOrder = validateIfInboundOrderExists(inboundOrderId);
+        validateIfTheGivenInboundOrderHaveTheProduct(inboundOrder, productId);
+    }
+
+    private InboundOrder validateIfInboundOrderExists(Long id) {
+        return inboundOrderRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Inbound order not found for the given id")
+        );
+    }
+
+    private void validateIfTheGivenInboundOrderHaveTheProduct(InboundOrder inboundOrder, Long productId) {
+        List<Product> productsFromInboundOrder = inboundOrder.getBatch().getProducts();
+        Product product = productsFromInboundOrder.stream().filter(p -> p.getId().equals(productId)).findAny().orElseThrow(() ->
+                new NotFoundException("Product not found for the given id"));
+    }
+
+    private Product getProductFromInboundOrder(InboundOrder inboundOrder, Long productId) {
+        return inboundOrder.getBatch().getProducts().stream()
+                .filter(product -> product.getId().equals(productId)).findAny().get();
     }
 }

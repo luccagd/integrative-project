@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 
 import lombok.*;
@@ -25,6 +26,7 @@ public class Section {
     private Category category;
 
     @OneToMany(mappedBy = "section")
+    @JsonIgnore
     private List<WarehouseSection> warehousesSections;
 
    }

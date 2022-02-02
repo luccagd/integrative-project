@@ -25,5 +25,5 @@ public class InboundOrderResponseDTO {
     @JsonProperty("orderDate")
     private LocalDateTime orderDate;
 
-    private Batch batchStock;
+    private BatchResponseDTO batchStock;
 }

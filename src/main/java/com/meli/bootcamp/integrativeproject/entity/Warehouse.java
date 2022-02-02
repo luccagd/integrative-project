@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -23,11 +24,11 @@ public class Warehouse {
     private String name;
 
     @OneToMany(mappedBy = "warehouse")
-    @JsonIgnoreProperties(value = "warehouse")
+    @JsonIgnore
     private List<WarehouseSection> warehouseSections;
 
     @OneToMany(mappedBy = "warehouse")
-    @JsonIgnoreProperties(value = "warehouse")
+    @JsonIgnore
     private List<WarehouseSellers> warehouseSellers;
 
     @OneToOne(mappedBy = "warehouse", cascade = CascadeType.ALL)

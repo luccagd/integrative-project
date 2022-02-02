@@ -44,7 +44,7 @@ public class WarehouseSection {
     }
 
     public void decreaseTotalProducts(Integer batchSize) {
-        this.totalProducts -= batchSize;
+        this.totalProducts -= Math.abs(batchSize);
     }
 
 }
