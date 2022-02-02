@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;
-import com.meli.bootcamp.integrativeproject.entity.Agent;
-import com.meli.bootcamp.integrativeproject.entity.Seller;
-import com.meli.bootcamp.integrativeproject.entity.Warehouse;
+import com.meli.bootcamp.integrativeproject.entity.*;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.InboundOrderRepository;
@@ -19,6 +17,7 @@ import org.mockito.Mock;
 
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class InboundOrderServiceTest {
@@ -85,13 +84,13 @@ public class InboundOrderServiceTest {
         request.setSellerId(sellerIdExistent);
         request.setWarehouseId(warehouseIdExistent);
 
-        var fakeAgentFromWarehouse = makeFakeAgent();
-        fakeAgentFromWarehouse.setId(2L);
+        var fakeAgent = makeFakeAgent();
+        fakeAgent.setId(2L);
 
         var fakeSeller = makeFakeSeller();
 
         var fakeWarehouse = makeFakeWarehouse();
-        fakeWarehouse.setAgent(fakeAgentFromWarehouse);
+        fakeWarehouse.setAgent(fakeAgent);
 
         when(sellerRepository.findById(request.getSellerId())).thenReturn(Optional.of(fakeSeller));
         when(warehouseRepository.findById(request.getWarehouseId())).thenReturn(Optional.of(fakeWarehouse));
@@ -99,6 +98,48 @@ public class InboundOrderServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request, agentId));
 
         assertEquals("Agent does not belong to the given warehouse", exception.getMessage());
+    }
+
+    @Test
+    public void shouldBeThrowIfWarehouseNotHaveTheGivenSectionWhenTrySave() {
+        var sellerIdExistent = 1L;
+
+        var warehouseIdExistent = 1L;
+
+        var sectionIdExistent = 1L;
+
+        var agentId = 1L;
+
+        var request = makeFakeInboundOrderRequestDTO();
+        request.setSellerId(sellerIdExistent);
+        request.setWarehouseId(warehouseIdExistent);
+        request.setSectionId(sectionIdExistent);
+
+        var fakeSeller = makeFakeSeller();
+
+        var fakeAgent = makeFakeAgent();
+        fakeAgent.setId(1L);
+
+        var fakeSection = makeFakeSection();
+        fakeSection.setId(2L);
+        var fakeSection2 = makeFakeSection();
+        fakeSection2.setId(2L);
+
+        var fakeWarehouseSection = makeFakeWarehouseSection();
+        fakeWarehouseSection.setSection(fakeSection);
+        var fakeWarehouseSection2 = makeFakeWarehouseSection();
+        fakeWarehouseSection2.setSection(fakeSection2);
+
+        var fakeWarehouse = makeFakeWarehouse();
+        fakeWarehouse.setAgent(fakeAgent);
+        fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection, fakeWarehouseSection2));
+
+        when(sellerRepository.findById(request.getSellerId())).thenReturn(Optional.of(fakeSeller));
+        when(warehouseRepository.findById(request.getWarehouseId())).thenReturn(Optional.of(fakeWarehouse));
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request, agentId));
+
+        assertEquals("Warehouse dont have the given section", exception.getMessage());
     }
 
     private InboundOrderRequestDTO makeFakeInboundOrderRequestDTO() {
@@ -115,5 +156,13 @@ public class InboundOrderServiceTest {
 
     private Agent makeFakeAgent() {
         return new Agent();
+    }
+
+    private WarehouseSection makeFakeWarehouseSection() {
+        return new WarehouseSection();
+    }
+
+    private Section makeFakeSection() {
+        return new Section();
     }
 }
