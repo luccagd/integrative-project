@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -217,6 +218,61 @@ public class InboundOrderServiceTest {
         assertEquals("Batch is bigger than section size", exception.getMessage());
     }
 
+    @Test
+    public void shouldBeCreatedSuccessfullyInboundOrder() {
+        var sellerIdExistent = 1L;
+        var warehouseIdExistent = 1L;
+        var sectionIdExistent = 1L;
+        var agentId = 1L;
+
+        var request = makeFakeInboundOrderRequestDTO();
+        request.setSellerId(sellerIdExistent);
+        request.setWarehouseId(warehouseIdExistent);
+        request.setSectionId(sectionIdExistent);
+
+        var fakeSeller = makeFakeSeller();
+
+        var fakeAgent = makeFakeAgent();
+        fakeAgent.setId(1L);
+
+        var fakeSection = makeFakeSection();
+        fakeSection.setId(1L);
+        fakeSection.setCategory(Category.FRESCO);
+
+        var fakeWarehouseSection = makeFakeWarehouseSection();
+        fakeWarehouseSection.setSection(fakeSection);
+        fakeWarehouseSection.setSize(10);
+        fakeWarehouseSection.setTotalProducts(0);
+
+        var fakeWarehouse = makeFakeWarehouse();
+        fakeWarehouse.setAgent(fakeAgent);
+        fakeWarehouse.setWarehouseSections(Arrays.asList(fakeWarehouseSection));
+
+        var fakeProduct = makeFakeProduct();
+        fakeProduct.setName("Tilápia");
+        fakeProduct.setCurrentTemperature(1.0);
+        fakeProduct.setMinimalTemperature(1.0);
+        fakeProduct.setQuantity(10);
+        fakeProduct.setDueDate(LocalDate.now());
+        fakeProduct.setCategory(Category.FRESCO);
+
+        var fakeBatch = makeFakeBatch();
+        fakeBatch.setProducts(Arrays.asList(fakeProduct));
+
+        var fakeInboundOrder = makeFakeInboundOrder();
+        fakeInboundOrder.setDateOrder(LocalDateTime.now());
+        fakeInboundOrder.setBatch(fakeBatch);
+
+        when(sellerRepository.findById(request.getSellerId())).thenReturn(Optional.of(fakeSeller));
+        when(warehouseRepository.findById(request.getWarehouseId())).thenReturn(Optional.of(fakeWarehouse));
+        when(inboundOrderRepository.save(any(InboundOrder.class))).thenReturn(fakeInboundOrder);
+
+        var response = service.save(request, agentId);
+
+        assertEquals("Tilápia", response.getBatchStock().getProducts().get(0).getName());
+        assertNotNull(response.getOrderDate());
+    }
+
     private ProductRequestDTO makeFakeProductRequestDTO() {
         return new ProductRequestDTO("Any Product", 1.0, 1.0, 10, LocalDate.of(2022, 10, 10), Category.FRESCO, 10.00);
     }
@@ -251,5 +307,17 @@ public class InboundOrderServiceTest {
 
     private Section makeFakeSection() {
         return new Section();
+    }
+
+    private InboundOrder makeFakeInboundOrder() {
+        return new InboundOrder();
+    }
+
+    private Batch makeFakeBatch() {
+        return new Batch();
+    }
+
+    private Product makeFakeProduct() {
+        return new Product();
     }
 }
