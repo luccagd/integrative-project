@@ -328,4 +328,47 @@ public class InboundOrderServiceTest {
 
         assertEquals("Section capacity exceeded", exception.getMessage());
     }
+
+    @Test
+    public void shouldBeUpdatedSuccessfullyInboundOrderAndIncreaseTotalProducts() {
+        var inboundOrderIdExistent = 1L;
+        var productIdExistent = 1L;
+
+        var request = InboundOrderServiceMocks.makeFakeProductRequestDTO(Category.FRESCO);
+
+        var fakeProduct = InboundOrderServiceMocks.makeFakeProduct();
+        fakeProduct.setName("Salsicha");
+        fakeProduct.setQuantity(1);
+
+        var fakeWarehouse = InboundOrderServiceMocks.makeFakeWarehouse();
+
+        var fakeSection = InboundOrderServiceMocks.makeFakeSection();
+
+        var fakeBatch = InboundOrderServiceMocks.makeFakeBatch();
+        fakeBatch.setProducts(Arrays.asList(fakeProduct));
+        fakeBatch.setWarehouse(fakeWarehouse);
+        fakeBatch.setSection(fakeSection);
+
+        var fakeInboundOrder = InboundOrderServiceMocks.makeFakeInboundOrder();
+        fakeInboundOrder.setBatch(fakeBatch);
+
+        var warehouseId = fakeInboundOrder.getBatch().getWarehouse().getId();
+        var sectionId = fakeInboundOrder.getBatch().getSection().getId();
+
+        var fakeWarehouseSection = InboundOrderServiceMocks.makeFakeWarehouseSection();
+        fakeWarehouseSection.setSize(100);
+        fakeWarehouseSection.setTotalProducts(80);
+
+        when(inboundOrderRepository.findById(inboundOrderIdExistent)).thenReturn(Optional.of(fakeInboundOrder));
+        when(inboundOrderRepository.findWarehouseSectionByWarehouseId(warehouseId, sectionId)).thenReturn(fakeWarehouseSection);
+        when(inboundOrderRepository.save(any(InboundOrder.class))).thenReturn(fakeInboundOrder);
+
+        var response = service.update(request, inboundOrderIdExistent, productIdExistent);
+
+        assertEquals(89, fakeWarehouseSection.getTotalProducts());
+
+        assertEquals(request.getName(), response.getProducts().get(0).getName());
+        assertEquals(request.getCurrentTemperature(), response.getProducts().get(0).getCurrentTemperature());
+        assertEquals(request.getDueDate(), response.getProducts().get(0).getDueDate());
+    }
 }
