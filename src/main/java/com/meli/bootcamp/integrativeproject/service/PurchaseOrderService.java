@@ -10,6 +10,7 @@ import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.*;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class PurchaseOrderService {
         this.warehouseSectionRepository = warehouseSectionRepository;
     }
 
+    @Transactional
     public PurchaseOrderResponse save(PurchaseOrderRequest request) {
         Buyer buyer = buyerRepository.findById(request.getBuyerId())
                 .orElseThrow(() -> new NotFoundException("Buyer Id is not found".toUpperCase()));
@@ -64,60 +66,61 @@ public class PurchaseOrderService {
                 .build();
     }
 
-      public PurchaseOrderResponse put(Long id, PurchaseOrderRequest request){
-          requestProductsValidations(request.getProducts());
-          List<CartProduct> cartProductList = cartProductRepository.findAll();
+    @Transactional
+    public PurchaseOrderResponse put(Long id, PurchaseOrderRequest request) {
+        requestProductsValidations(request.getProducts());
+        List<CartProduct> cartProductList = new ArrayList<>();
 
-          Double totalPurchase = request.getProducts().stream().mapToDouble(requestProduct -> {
-              Product product = productRepository.findById(requestProduct.getProductId()).orElseThrow(() -> new NotFoundException("Product not found".toUpperCase()));
-              WarehouseSection warehouseSection = warehouseSectionRepository.findWarehouseSectionByProductId(requestProduct.getProductId());
+        request.getProducts().forEach(requestProduct ->{
+                    cartProductList.add(cartProductRepository.findByCart_IdAndProduct_Id(id, requestProduct.getProductId()));
+        });
 
-              for (CartProduct cartProduct : cartProductList) {
-                  if (cartProduct.getCart().getId().equals(id) && cartProduct.getProduct().getId().equals(requestProduct.getProductId())) {
-                      Integer diff = cartProduct.getQuantity() - requestProduct.getQuantity();
+        request.getProducts().forEach(requestProduct ->{
+           if (!cartProductRepository.existsByProduct_IdAndCart_Id(requestProduct.getProductId(), id))
+               throw new BusinessException("This product does not exist in this cart".toUpperCase());
+        });
 
-                      if (product.getQuantity() + diff < 0)
-                          throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
+        Double totalPurchase = request.getProducts().stream().mapToDouble(requestProduct -> {
+            Product product = productRepository.findById(requestProduct.getProductId()).orElseThrow(() -> new NotFoundException("Product not found".toUpperCase()));
+            WarehouseSection warehouseSection = warehouseSectionRepository.findWarehouseSectionByProductId(requestProduct.getProductId());
+            cartProductList.forEach(cartProduct -> {
 
-                      product.setQuantity(product.getQuantity() + diff);
-                      cartProduct.setQuantity(requestProduct.getQuantity());
+                    Integer diff = cartProduct.getQuantity() - requestProduct.getQuantity();
 
-                      warehouseSection.increaseTotalProducts(diff);
+                    if (product.getQuantity() + diff < 0)
+                        throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
 
-                      productRepository.save(product);
-                      cartProductRepository.save(cartProduct);
-                      warehouseSectionRepository.save(warehouseSection);
-                      break;
-                  }
-              }
-              return product.getPrice() * requestProduct.getQuantity();
-          }).sum();
+                    product.setQuantity(product.getQuantity() + diff);
+                    cartProduct.setQuantity(requestProduct.getQuantity());
 
-              return PurchaseOrderResponse.builder()
-                      .totalPrice(BigDecimal.valueOf(totalPurchase))
-                      .build();
+                    warehouseSection.increaseTotalProducts(diff);
+
+                    productRepository.save(product);
+                    cartProductRepository.save(cartProduct);
+                    warehouseSectionRepository.save(warehouseSection);
+                });
+            return product.getPrice() * requestProduct.getQuantity();
+        }).sum();
+
+        return PurchaseOrderResponse.builder()
+                .totalPrice(BigDecimal.valueOf(totalPurchase))
+                .build();
     }
 
     public void saveCartProduct(Cart cart, Product product, Integer quantity) {
         cartProductRepository.save(CartProduct.builder().cart(cart).product(product).quantity(quantity).build());
     }
-
+    @Transactional
     public void updateWarehouseSection(WarehouseSection warehouseSection, Integer quantity) {
         if(warehouseSection.getTotalProducts() < quantity)
             throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
         warehouseSection.setTotalProducts(warehouseSection.getTotalProducts() - quantity);
     }
-
-    public void requestProductsValidations(List<PurchaseOrderProductRequest> productList) {
-        productList.stream().forEach(product -> {
-            Product findProduct = productRepository.findById(product.getProductId())
-                    .orElseThrow(() -> new NotFoundException("Product id is not found".toUpperCase()));
-
-            if (product.getQuantity() <= 0)
+    @Transactional
+    public void requestProductsValidations(List<PurchaseOrderProductRequest> requestProductList) {
+        requestProductList.stream().forEach(requestProduct -> {
+            if (requestProduct.getQuantity() <= 0)
                 throw new BusinessException("Quantity is less than 1".toUpperCase());
-
-            if (product.getQuantity() > findProduct.getQuantity())
-                throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
         });
     }
 }
