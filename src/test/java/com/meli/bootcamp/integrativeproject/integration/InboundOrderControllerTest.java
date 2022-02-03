@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("integration_tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -199,5 +199,47 @@ public class InboundOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Section capacity exceeded"));
+    }
+
+    @Test
+    public void shouldBeReturns201IIfUpdatedSuccessfullyInboundOrderAndIncreaseTotalProduct() throws Exception {
+        String POST_httpRequest = "{\"sectionId\":1,\"warehouseId\":1,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"Salsicha\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":10,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00},{\"name\":\"Frango\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"15-03-2022\",\"category\":\"REFRIGERADO\",\"price\":10.00}]}}";
+        String PUT_httpRequest = "{\"name\":\"Presunto\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":20,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(POST_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        this.mockMvc
+                .perform(put("/fresh-products/inboundorder/1/1")
+                        .content(PUT_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.products[0].name").value("Presunto"))
+                .andExpect(jsonPath("$.products[0].quantity").value(20));
+    }
+
+    @Test
+    public void shouldBeReturns201IIfUpdatedSuccessfullyInboundOrderAndDecreaseTotalProduct() throws Exception {
+        String POST_httpRequest = "{\"sectionId\":1,\"warehouseId\":1,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"Salsicha\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":10,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00},{\"name\":\"Frango\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"15-03-2022\",\"category\":\"REFRIGERADO\",\"price\":10.00}]}}";
+        String PUT_httpRequest = "{\"name\":\"Presunto\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":10,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(POST_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        this.mockMvc
+                .perform(put("/fresh-products/inboundorder/1/1")
+                        .content(PUT_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.products[0].name").value("Presunto"))
+                .andExpect(jsonPath("$.products[0].quantity").value(10));
     }
 }
