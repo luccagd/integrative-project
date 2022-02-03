@@ -1,12 +1,15 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import javax.persistence.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "carts_products")
 public class CartProduct {
 
