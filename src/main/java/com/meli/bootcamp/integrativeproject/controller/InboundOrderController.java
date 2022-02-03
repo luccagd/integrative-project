@@ -20,7 +20,7 @@ public class InboundOrderController {
 
     @PostMapping
     public ResponseEntity<InboundOrderResponseDTO> save(@RequestBody InboundOrderRequestDTO inboundOrderRequestDTO,
-            @RequestHeader(value = "agentId") Long agentId) {
+                                                        @RequestHeader(value = "agentId") Long agentId) {
         InboundOrderResponseDTO inboundOrderResponseDTO = service.save(inboundOrderRequestDTO, agentId);
 
         return ResponseEntity.created(null).body(inboundOrderResponseDTO);
