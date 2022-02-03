@@ -73,7 +73,6 @@ public class InboundOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Warehouse not found for the given id"));
-        ;
     }
 
     @Test
@@ -87,7 +86,6 @@ public class InboundOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Agent does not belong to the given warehouse"));
-
     }
 
     @Test
@@ -101,7 +99,6 @@ public class InboundOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Warehouse dont have the given section"));
-
     }
 
     @Test
@@ -115,7 +112,6 @@ public class InboundOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Product category is not equal to section category"));
-
     }
 
     @Test
@@ -129,6 +125,19 @@ public class InboundOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Batch is bigger than section size"));
+    }
 
+    @Test
+    public void shouldBeReturns201IfCreatedSuccessfullyInboundOrder() throws Exception {
+        String httpRequest = "{\"sectionId\":1,\"warehouseId\":1,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"Salsicha\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00},{\"name\":\"Frango\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"15-03-2022\",\"category\":\"REFRIGERADO\",\"price\":10.00}]}}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.batchStock.products[0].name").value("Salsicha"))
+                .andExpect(jsonPath("$.batchStock.products[1].name").value("Frango"));
     }
 }
