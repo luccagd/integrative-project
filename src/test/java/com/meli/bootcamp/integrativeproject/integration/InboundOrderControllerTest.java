@@ -117,4 +117,18 @@ public class InboundOrderControllerTest {
                 .andExpect(jsonPath("$.message").value("Product category is not equal to section category"));
 
     }
+
+    @Test
+    public void shouldBeReturns400IfWarehouseSectionNotHaveEnoughSpaceWhenTrySave() throws Exception {
+        String httpRequest = "{\"sectionId\":1,\"warehouseId\":1,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"Salsicha\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":55,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00},{\"name\":\"Frango\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":55,\"dueDate\":\"15-03-2022\",\"category\":\"REFRIGERADO\",\"price\":10.00}]}}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Batch is bigger than section size"));
+
+    }
 }
