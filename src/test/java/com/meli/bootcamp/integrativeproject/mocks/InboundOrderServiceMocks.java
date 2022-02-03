@@ -1,4 +1,4 @@
-package com.meli.bootcamp.integrativeproject.unit.mocks;
+package com.meli.bootcamp.integrativeproject.mocks;
 
 import com.meli.bootcamp.integrativeproject.dto.request.BatchRequestDTO;
 import com.meli.bootcamp.integrativeproject.dto.request.InboundOrderRequestDTO;

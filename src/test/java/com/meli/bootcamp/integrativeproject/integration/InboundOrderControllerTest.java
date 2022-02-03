@@ -1,13 +1,9 @@
-package com.meli.bootcamp.integrativeproject.unit.integration;
+package com.meli.bootcamp.integrativeproject.integration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
-import com.meli.bootcamp.integrativeproject.repositories.SellerRepository;
-import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -95,6 +87,20 @@ public class InboundOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Agent does not belong to the given warehouse"));
+
+    }
+
+    @Test
+    public void shouldBeReturns400IfWarehouseNotHaveTheGivenSectionWhenTrySave() throws Exception {
+        String httpRequest = "{\"sectionId\":999,\"warehouseId\":1,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"PEIXE\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"25-02-2022\",\"category\":\"CONGELADO\",\"price\":20.00},{\"name\":\"FRANGO\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":10,\"dueDate\":\"15-03-2022\",\"category\":\"CONGELADO\",\"price\":10.00}]}}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Warehouse dont have the given section"));
 
     }
 }

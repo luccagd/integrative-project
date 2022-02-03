@@ -11,7 +11,7 @@ import com.meli.bootcamp.integrativeproject.repositories.InboundOrderRepository;
 import com.meli.bootcamp.integrativeproject.repositories.SellerRepository;
 import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
 import com.meli.bootcamp.integrativeproject.service.InboundOrderService;
-import com.meli.bootcamp.integrativeproject.unit.mocks.InboundOrderServiceMocks;
+import com.meli.bootcamp.integrativeproject.mocks.InboundOrderServiceMocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
