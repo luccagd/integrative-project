@@ -83,8 +83,9 @@ public class PurchaseOrderService {
         Double totalPurchase = request.getProducts().stream().mapToDouble(requestProduct -> {
             Product product = productRepository.findById(requestProduct.getProductId()).orElseThrow(() -> new NotFoundException("Product not found".toUpperCase()));
             WarehouseSection warehouseSection = warehouseSectionRepository.findWarehouseSectionByProductId(requestProduct.getProductId());
-            cartProductList.forEach(cartProduct -> {
 
+            for (CartProduct cartProduct : cartProductList) {
+                if (cartProduct.getCart().getId().equals(id) && cartProduct.getProduct().getId().equals(requestProduct.getProductId())) {
                     Integer diff = cartProduct.getQuantity() - requestProduct.getQuantity();
 
                     if (product.getQuantity() + diff < 0)
@@ -98,7 +99,10 @@ public class PurchaseOrderService {
                     productRepository.save(product);
                     cartProductRepository.save(cartProduct);
                     warehouseSectionRepository.save(warehouseSection);
-                });
+                    break;
+                }
+            };
+
             return product.getPrice() * requestProduct.getQuantity();
         }).sum();
 
