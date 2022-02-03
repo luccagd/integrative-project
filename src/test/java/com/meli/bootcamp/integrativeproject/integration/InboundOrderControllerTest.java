@@ -180,4 +180,24 @@ public class InboundOrderControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Product not found for the given id"));
     }
+
+    @Test
+    public void shouldBeReturns400IfSectionCapacityExceededWhenTryUpdate() throws Exception {
+        String POST_httpRequest = "{\"sectionId\":1,\"warehouseId\":1,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"Salsicha\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00},{\"name\":\"Frango\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"15-03-2022\",\"category\":\"REFRIGERADO\",\"price\":10.00}]}}";
+        String PUT_httpRequest = "{\"name\":\"Presunto\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":110,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(POST_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        this.mockMvc
+                .perform(put("/fresh-products/inboundorder/1/1")
+                        .content(PUT_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Section capacity exceeded"));
+    }
 }
