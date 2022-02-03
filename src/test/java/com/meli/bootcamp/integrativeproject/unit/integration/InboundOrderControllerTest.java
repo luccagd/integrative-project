@@ -36,4 +36,18 @@ public class InboundOrderControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Seller not found for the given id"));
     }
+
+    @Test
+    public void shouldBeReturns404IfWarehouseNotFoundWhenTrySave() throws Exception {
+        String httpRequest = "{\"sectionId\":1,\"warehouseId\":999,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"PEIXE\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"25-02-2022\",\"category\":\"CONGELADO\",\"price\":20.00},{\"name\":\"FRANGO\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":10,\"dueDate\":\"15-03-2022\",\"category\":\"CONGELADO\",\"price\":10.00}]}}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Warehouse not found for the given id"));;
+    }
 }
