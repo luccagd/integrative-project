@@ -140,4 +140,24 @@ public class InboundOrderControllerTest {
                 .andExpect(jsonPath("$.batchStock.products[0].name").value("Salsicha"))
                 .andExpect(jsonPath("$.batchStock.products[1].name").value("Frango"));
     }
+
+    @Test
+    public void shouldBeReturns404IfInboundOrderNotExistsWhenTryUpdate() throws Exception {
+        String POST_httpRequest = "{\"sectionId\":1,\"warehouseId\":1,\"sellerId\":1,\"batchStock\":{\"products\":[{\"name\":\"Salsicha\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00},{\"name\":\"Frango\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"15-03-2022\",\"category\":\"REFRIGERADO\",\"price\":10.00}]}}";
+        String PUT_httpRequest = "{\"name\":\"Presunto\",\"currentTemperature\":10,\"minimalTemperature\":5,\"quantity\":1,\"dueDate\":\"25-02-2022\",\"category\":\"REFRIGERADO\",\"price\":20.00}";
+
+        this.mockMvc
+                .perform(post("/fresh-products/inboundorder")
+                        .header("agentId", 1)
+                        .content(POST_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        this.mockMvc
+                .perform(put("/fresh-products/inboundorder/999/1")
+                        .content(PUT_httpRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Inbound order not found for the given id"));
+    }
 }
