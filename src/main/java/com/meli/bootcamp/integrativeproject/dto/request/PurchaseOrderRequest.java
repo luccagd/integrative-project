@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -19,8 +20,8 @@ import java.util.List;
 public class PurchaseOrderRequest {
     private Long buyerId;
 
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate date;
+
     private List<PurchaseOrderProductRequest> products;
 }

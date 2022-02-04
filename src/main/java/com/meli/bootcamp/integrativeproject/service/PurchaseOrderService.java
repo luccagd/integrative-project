@@ -17,7 +17,6 @@ import java.util.List;
 
 import static java.math.BigDecimal.*;
 
-
 @Service
 public class PurchaseOrderService {
     private ProductRepository productRepository;
@@ -37,7 +36,7 @@ public class PurchaseOrderService {
     @Transactional
     public PurchaseOrderResponse save(PurchaseOrderRequest request) {
         Buyer buyer = buyerRepository.findById(request.getBuyerId())
-                .orElseThrow(() -> new NotFoundException("Buyer Id is not found".toUpperCase()));
+                .orElseThrow(() -> new NotFoundException("Buyer not exists!"));
 
         Cart buyerCart = new Cart();
         buyerCart.setBuyer(buyer);
@@ -71,13 +70,13 @@ public class PurchaseOrderService {
         requestProductsValidations(request.getProducts());
         List<CartProduct> cartProductList = new ArrayList<>();
 
-        request.getProducts().forEach(requestProduct ->{
-                    cartProductList.add(cartProductRepository.findByCart_IdAndProduct_Id(id, requestProduct.getProductId()));
+        request.getProducts().forEach(requestProduct -> {
+            cartProductList.add(cartProductRepository.findByCart_IdAndProduct_Id(id, requestProduct.getProductId()));
         });
 
-        request.getProducts().forEach(requestProduct ->{
-           if (!cartProductRepository.existsByProduct_IdAndCart_Id(requestProduct.getProductId(), id))
-               throw new BusinessException("This product does not exist in this cart".toUpperCase());
+        request.getProducts().forEach(requestProduct -> {
+            if (!cartProductRepository.existsByProduct_IdAndCart_Id(requestProduct.getProductId(), id))
+                throw new BusinessException("This product does not exist in this cart".toUpperCase());
         });
 
         Double totalPurchase = request.getProducts().stream().mapToDouble(requestProduct -> {
@@ -101,7 +100,8 @@ public class PurchaseOrderService {
                     warehouseSectionRepository.save(warehouseSection);
                     break;
                 }
-            };
+            }
+            ;
 
             return product.getPrice() * requestProduct.getQuantity();
         }).sum();
@@ -114,12 +114,14 @@ public class PurchaseOrderService {
     public void saveCartProduct(Cart cart, Product product, Integer quantity) {
         cartProductRepository.save(CartProduct.builder().cart(cart).product(product).quantity(quantity).build());
     }
+
     @Transactional
     public void updateWarehouseSection(WarehouseSection warehouseSection, Integer quantity) {
-        if(warehouseSection.getTotalProducts() < quantity)
+        if (warehouseSection.getTotalProducts() < quantity)
             throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
         warehouseSection.setTotalProducts(warehouseSection.getTotalProducts() - quantity);
     }
+
     @Transactional
     public void requestProductsValidations(List<PurchaseOrderProductRequest> requestProductList) {
         requestProductList.stream().forEach(requestProduct -> {
