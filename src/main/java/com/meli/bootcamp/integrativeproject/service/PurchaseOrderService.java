@@ -40,6 +40,7 @@ public class PurchaseOrderService {
                 .orElseThrow(() -> new NotFoundException("Buyer not exists!"));
 
         validateIfProductHaveEnoughStock(request.getProducts());
+        validateIfProductHasAnExpirationDateOfLessThan3Weeks(request.getProducts());
 
         Cart buyerCart = new Cart();
         buyerCart.setBuyer(buyer);
@@ -139,6 +140,18 @@ public class PurchaseOrderService {
 
             if (requestProduct.getQuantity() > findProductInStock.getQuantity()) {
                 throw new BusinessException("Product " + findProductInStock.getName() + " does not have enough stock for this quantity!");
+            }
+        });
+    }
+
+    private void validateIfProductHasAnExpirationDateOfLessThan3Weeks(List<PurchaseOrderProductRequest> purchaseOrderProductRequests) {
+        purchaseOrderProductRequests.stream().forEach(requestProduct -> {
+            Product findProductInStock = productRepository.findById(requestProduct.getProductId()).get();
+
+            LocalDate dueDateDeadlineTo3Weeks = LocalDate.now().plusWeeks(3);
+
+            if (findProductInStock.getDueDate().isBefore(dueDateDeadlineTo3Weeks)) {
+                throw new BusinessException("Product " + findProductInStock.getName() + " has an expiration date of less than 3 weeks!");
             }
         });
     }

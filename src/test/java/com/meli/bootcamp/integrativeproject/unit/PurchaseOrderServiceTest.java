@@ -18,7 +18,10 @@ import org.mockito.Mock;
 
 import org.mockito.MockitoAnnotations;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -78,5 +81,24 @@ public class PurchaseOrderServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request));
 
         assertEquals("Product " + fakeProduct.getName() + " does not have enough stock for this quantity!", exception.getMessage());
+    }
+
+    @Test
+    public void shouldBeThrowIfProductHasAnExpirationDateOfLessThan3WeeksWhenTrySave() {
+        var request = PurchaseOrderServiceMocks.makeFakePurchaseOrderRequest();
+        request.setBuyerId(existentBuyerId);
+
+        var fakeBuyer = PurchaseOrderServiceMocks.makeFakeBuyer();
+
+        var fakeProduct = PurchaseOrderServiceMocks.makeFakeProduct();
+        fakeProduct.setQuantity(20);
+        fakeProduct.setDueDate(LocalDate.now().plusWeeks(4));
+
+        when(buyerRepository.findById(request.getBuyerId())).thenReturn(Optional.of(fakeBuyer));
+        when(productRepository.findById(request.getProducts().get(0).getProductId())).thenReturn(Optional.of(fakeProduct));
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request));
+
+        assertEquals("Product " + fakeProduct.getName() + " has an expiration date of less than 3 weeks!", exception.getMessage());
     }
 }
