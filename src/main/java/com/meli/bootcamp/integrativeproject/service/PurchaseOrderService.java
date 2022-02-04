@@ -1,7 +1,6 @@
 package com.meli.bootcamp.integrativeproject.service;
 
 import com.meli.bootcamp.integrativeproject.dto.request.PurchaseOrderProductRequest;
-import org.springframework.stereotype.Service;
 import com.meli.bootcamp.integrativeproject.dto.request.PurchaseOrderRequest;
 import com.meli.bootcamp.integrativeproject.dto.response.PurchaseOrderResponse;
 import com.meli.bootcamp.integrativeproject.entity.*;
@@ -10,13 +9,15 @@ import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.*;
 
+import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.math.BigDecimal.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseOrderService {
@@ -36,37 +37,48 @@ public class PurchaseOrderService {
 
     @Transactional
     public PurchaseOrderResponse save(PurchaseOrderRequest request) {
+        AtomicReference<Double> cartTotalPrice = new AtomicReference<>(0.0);
+
         Buyer buyer = buyerRepository.findById(request.getBuyerId())
                 .orElseThrow(() -> new NotFoundException("Buyer not exists!"));
 
-        validateIfProductHaveEnoughStock(request.getProducts());
-        validateIfProductHasAnExpirationDateOfLessThan3Weeks(request.getProducts());
+        List<PurchaseOrderProductRequest> productRequests = request.getProducts();
+        validateIfProductHaveEnoughStock(productRequests);
+        validateIfProductHasAnExpirationDateOfLessThan3Weeks(productRequests);
 
-        Cart buyerCart = new Cart();
-        buyerCart.setBuyer(buyer);
-        buyer.getCarts().add(buyerCart);
+        Cart cart = Cart.builder().buyer(buyer).status(CartStatus.FECHADO).build();
+        cart.setCartsProducts(addProductsToCart(productRequests, cart, cartTotalPrice));
 
-        requestProductsValidations(request.getProducts());
-
-        Double totalPurchase = request.getProducts().stream().mapToDouble(requestProduct -> {
-            Product findProduct = productRepository.findById(requestProduct.getProductId()).get();
-            WarehouseSection warehouseSection = warehouseSectionRepository.findWarehouseSectionByProductId(findProduct.getId());
-
-            findProduct.setQuantity(findProduct.getQuantity() - requestProduct.getQuantity());
-
-            updateWarehouseSection(warehouseSection, requestProduct.getQuantity());
-
-            saveCartProduct(buyerCart, findProduct, requestProduct.getQuantity());
-            return findProduct.getPrice() * requestProduct.getQuantity();
-        }).sum();
-
-        buyerCart.setStatus(CartStatus.FECHADO);
-        buyerRepository.save(buyer);
-        cartRepository.save(buyerCart);
+        cartRepository.save(cart);
 
         return PurchaseOrderResponse.builder()
-                .totalPrice(valueOf(totalPurchase))
+                .totalPrice(BigDecimal.valueOf(cartTotalPrice.get()))
                 .build();
+    }
+
+    private List<CartProduct> addProductsToCart(List<PurchaseOrderProductRequest> productsRequest, Cart cart, AtomicReference<Double> totalPrice) {
+        return productsRequest.stream().map(requestProduct -> {
+            Product productInStock = productRepository.findById(requestProduct.getProductId()).get();
+            WarehouseSection warehouseSectionForProductInStock = warehouseSectionRepository.findWarehouseSectionByProductId(productInStock.getId());
+
+            Integer requestProductQuantity = requestProduct.getQuantity();
+
+            updateProductQuantityAndDecreaseTotalProducts(productInStock, warehouseSectionForProductInStock, requestProductQuantity);
+
+            totalPrice.updateAndGet(v -> v + (productInStock.getPrice() * requestProductQuantity));
+
+            return CartProduct.builder()
+                    .cart(cart)
+                    .product(productInStock)
+                    .quantity(requestProductQuantity)
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+    private void updateProductQuantityAndDecreaseTotalProducts(Product product, WarehouseSection warehouseSection, Integer quantity) {
+        product.setQuantity(product.getQuantity() - quantity);
+
+        warehouseSection.decreaseTotalProducts(quantity);
     }
 
     @Transactional
@@ -113,17 +125,6 @@ public class PurchaseOrderService {
         return PurchaseOrderResponse.builder()
                 .totalPrice(BigDecimal.valueOf(totalPurchase))
                 .build();
-    }
-
-    public void saveCartProduct(Cart cart, Product product, Integer quantity) {
-        cartProductRepository.save(CartProduct.builder().cart(cart).product(product).quantity(quantity).build());
-    }
-
-    @Transactional
-    public void updateWarehouseSection(WarehouseSection warehouseSection, Integer quantity) {
-        if (warehouseSection.getTotalProducts() < quantity)
-            throw new BusinessException("Ordered quantity is greater than what is in stock".toUpperCase());
-        warehouseSection.setTotalProducts(warehouseSection.getTotalProducts() - quantity);
     }
 
     @Transactional

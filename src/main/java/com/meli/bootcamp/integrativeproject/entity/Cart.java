@@ -15,8 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
 @Builder
+@Entity
 @Table(name = "carts")
 public class Cart {
     @Id
@@ -27,11 +27,11 @@ public class Cart {
     @Column(name = "status", nullable = false)
     private CartStatus status = CartStatus.ABERTO;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<CartProduct> cartsProducts;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "buyer_id", referencedColumnName = "id")
     private Buyer buyer;
 

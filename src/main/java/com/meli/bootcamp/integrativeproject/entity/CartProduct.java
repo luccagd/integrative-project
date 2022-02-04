@@ -15,9 +15,9 @@ public class CartProduct {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+    private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "cart_id", referencedColumnName = "id")
     private Cart cart;
 

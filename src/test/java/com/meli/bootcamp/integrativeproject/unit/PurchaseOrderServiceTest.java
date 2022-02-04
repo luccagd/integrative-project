@@ -1,29 +1,21 @@
 package com.meli.bootcamp.integrativeproject.unit;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import com.meli.bootcamp.integrativeproject.entity.*;
-import com.meli.bootcamp.integrativeproject.enums.Category;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.mocks.PurchaseOrderServiceMocks;
 import com.meli.bootcamp.integrativeproject.repositories.*;
-import com.meli.bootcamp.integrativeproject.service.InboundOrderService;
-import com.meli.bootcamp.integrativeproject.mocks.InboundOrderServiceMocks;
 import com.meli.bootcamp.integrativeproject.service.PurchaseOrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
 import org.mockito.MockitoAnnotations;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 public class PurchaseOrderServiceTest {
 
@@ -92,7 +84,7 @@ public class PurchaseOrderServiceTest {
 
         var fakeProduct = PurchaseOrderServiceMocks.makeFakeProduct();
         fakeProduct.setQuantity(20);
-        fakeProduct.setDueDate(LocalDate.now().plusWeeks(4));
+        fakeProduct.setDueDate(LocalDate.now().plusWeeks(2));
 
         when(buyerRepository.findById(request.getBuyerId())).thenReturn(Optional.of(fakeBuyer));
         when(productRepository.findById(request.getProducts().get(0).getProductId())).thenReturn(Optional.of(fakeProduct));
