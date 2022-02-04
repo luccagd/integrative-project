@@ -83,7 +83,7 @@ public class PurchaseOrderService {
 
     @Transactional
     public PurchaseOrderResponse put(Long id, PurchaseOrderRequest request) {
-        requestProductsValidations(request.getProducts());
+        // requestProductsValidations(request.getProducts());
         List<CartProduct> cartProductList = new ArrayList<>();
 
         request.getProducts().forEach(requestProduct -> {
@@ -125,14 +125,6 @@ public class PurchaseOrderService {
         return PurchaseOrderResponse.builder()
                 .totalPrice(BigDecimal.valueOf(totalPurchase))
                 .build();
-    }
-
-    @Transactional
-    public void requestProductsValidations(List<PurchaseOrderProductRequest> requestProductList) {
-        requestProductList.stream().forEach(requestProduct -> {
-            if (requestProduct.getQuantity() <= 0)
-                throw new BusinessException("Quantity is less than 1".toUpperCase());
-        });
     }
 
     private void validateIfProductHaveEnoughStock(List<PurchaseOrderProductRequest> purchaseOrderProductRequests) {
