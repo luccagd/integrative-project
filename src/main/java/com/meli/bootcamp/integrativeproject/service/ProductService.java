@@ -1,14 +1,18 @@
 package com.meli.bootcamp.integrativeproject.service;
 
+import com.meli.bootcamp.integrativeproject.dto.response.WarehouseProductDTO;
+import com.meli.bootcamp.integrativeproject.dto.response.WarehouseProductResponse;
 import com.meli.bootcamp.integrativeproject.entity.Product;
 import com.meli.bootcamp.integrativeproject.enums.Category;
 import com.meli.bootcamp.integrativeproject.exception.BusinessException;
 import com.meli.bootcamp.integrativeproject.exception.InvalidEnumException;
 import com.meli.bootcamp.integrativeproject.exception.NotFoundException;
 import com.meli.bootcamp.integrativeproject.repositories.ProductRepository;
+import com.meli.bootcamp.integrativeproject.repositories.ProductRepository.ProductInWarehouse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -98,5 +102,23 @@ public class ProductService {
             default:
                 throw new BusinessException("Valid values for sorting are L, C or F");
         }
+    }
+
+    public WarehouseProductResponse findAllByNameInWarehouse(String name){
+        List<WarehouseProductDTO> productDTOList = new ArrayList<>();
+        WarehouseProductResponse response = new WarehouseProductResponse(name, productDTOList);
+        List<ProductInWarehouse> productInWarehouseList = productRepository.findAllByNameInWarehousesIgnoreCase(name);
+
+        if(productInWarehouseList.isEmpty())
+            throw new NotFoundException("Product not found".toUpperCase());
+
+        productInWarehouseList.stream().forEach(productInWarehouse -> {
+            productDTOList.add(WarehouseProductDTO.builder()
+                    .warehouseCode(productInWarehouse.getWarehouse_id())
+                    .totalQuantity(productInWarehouse.getQuantity_product())
+                    .build());
+        });
+
+        return response;
     }
 }
