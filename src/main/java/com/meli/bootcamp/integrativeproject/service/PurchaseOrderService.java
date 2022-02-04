@@ -34,6 +34,16 @@ public class PurchaseOrderService {
         this.warehouseSectionRepository = warehouseSectionRepository;
     }
 
+    public List<CartProduct> findByCartId(Long id) {
+        List<CartProduct> cartProducts = cartProductRepository.findByCartId(id);
+
+        if (cartProducts == null || cartProducts.isEmpty()) {
+            throw new NotFoundException("No orders were found for the given id");
+        }
+
+        return cartProducts;
+    }
+
     @Transactional
     public PurchaseOrderResponse save(PurchaseOrderRequest request) {
         Buyer buyer = buyerRepository.findById(request.getBuyerId())
