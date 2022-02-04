@@ -12,6 +12,7 @@ import com.meli.bootcamp.integrativeproject.repositories.*;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,8 @@ public class PurchaseOrderService {
     public PurchaseOrderResponse save(PurchaseOrderRequest request) {
         Buyer buyer = buyerRepository.findById(request.getBuyerId())
                 .orElseThrow(() -> new NotFoundException("Buyer not exists!"));
+
+        validateIfProductHaveEnoughStock(request.getProducts());
 
         Cart buyerCart = new Cart();
         buyerCart.setBuyer(buyer);
@@ -127,6 +130,16 @@ public class PurchaseOrderService {
         requestProductList.stream().forEach(requestProduct -> {
             if (requestProduct.getQuantity() <= 0)
                 throw new BusinessException("Quantity is less than 1".toUpperCase());
+        });
+    }
+
+    private void validateIfProductHaveEnoughStock(List<PurchaseOrderProductRequest> purchaseOrderProductRequests) {
+        purchaseOrderProductRequests.stream().forEach(requestProduct -> {
+            Product findProductInStock = productRepository.findById(requestProduct.getProductId()).get();
+
+            if (requestProduct.getQuantity() > findProductInStock.getQuantity()) {
+                throw new BusinessException("Product " + findProductInStock.getName() + " does not have enough stock for this quantity!");
+            }
         });
     }
 }

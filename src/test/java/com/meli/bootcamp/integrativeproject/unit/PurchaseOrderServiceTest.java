@@ -61,4 +61,22 @@ public class PurchaseOrderServiceTest {
 
         assertEquals("Buyer not exists!", exception.getMessage());
     }
+
+    @Test
+    public void shouldBeThrowIfProductDoesNotHaveEnoughStockWhenTrySave() {
+        var request = PurchaseOrderServiceMocks.makeFakePurchaseOrderRequest();
+        request.setBuyerId(existentBuyerId);
+
+        var fakeBuyer = PurchaseOrderServiceMocks.makeFakeBuyer();
+
+        var fakeProduct = PurchaseOrderServiceMocks.makeFakeProduct();
+        fakeProduct.setQuantity(1);
+
+        when(buyerRepository.findById(request.getBuyerId())).thenReturn(Optional.of(fakeBuyer));
+        when(productRepository.findById(request.getProducts().get(0).getProductId())).thenReturn(Optional.of(fakeProduct));
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> service.save(request));
+
+        assertEquals("Product " + fakeProduct.getName() + " does not have enough stock for this quantity!", exception.getMessage());
+    }
 }
