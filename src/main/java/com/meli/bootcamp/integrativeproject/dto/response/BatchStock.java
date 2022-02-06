@@ -10,12 +10,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class BatchStock {
-
     private Integer batchNumber;
     private Long productId;
     private String productTypeId;
     private LocalDate dueDate;
-    private Integer dateDiff;
     private Integer quantity;
-
 }

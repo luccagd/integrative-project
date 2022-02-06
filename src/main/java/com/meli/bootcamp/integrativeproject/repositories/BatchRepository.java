@@ -13,15 +13,11 @@ import java.util.List;
 @Repository
 public interface BatchRepository extends JpaRepository<Batch, Long> {
 
-    @Query(value = "SELECT b.BATCH_NUMBER, p.ID as PRODUCT_ID, p.CATEGORY as PRODUCT_CATEGORY, p.DUE_DATE, p.QUANTITY, DATEDIFF(day, CURRENT_DATE, p.DUE_DATE) AS DATEDIFF  " +
-            "FROM BATCHES B " +
-            "JOIN PRODUCTS P  ON (P.BATCH_ID = B.ID) " +
-            "JOIN SECTIONS S ON (b.SECTION_ID = S.id) " +
-            "where p.CATEGORY = :sectionName  " +
-            "GROUP BY p.DUE_DATE, b.BATCH_NUMBER, p.ID " +
-            "ORDER BY p.DUE_DATE, b.BATCH_NUMBER", nativeQuery = true)
-
-
+    @Query(value = "SELECT B.BATCH_NUMBER, P.ID as PRODUCT_ID, P.CATEGORY as PRODUCT_CATEGORY, P.DUE_DATE, P.QUANTITY," +
+            " DATEDIFF(day, CURRENT_DATE, p.DUE_DATE) AS DATEDIFF  " +
+            "FROM BATCHES B JOIN PRODUCTS P  ON (P.BATCH_ID = B.ID) JOIN SECTIONS S ON (B.SECTION_ID = S.id) " +
+            "WHERE P.CATEGORY = :sectionName GROUP BY P.DUE_DATE, B.BATCH_NUMBER, B.ID ORDER BY B.BATCH_NUMBER"
+             ,nativeQuery = true)
     List<BatchResponse> findAllBySectionNameAndDueDate(@Param("sectionName") String sectionName);
 
     interface BatchResponse{

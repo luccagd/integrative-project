@@ -18,13 +18,9 @@ private BatchService batchService;
     {
         this.batchService = batchService;
     }
-
-    @GetMapping("/due-date/")
+    @GetMapping("/due-date")
     public ResponseEntity<Object> findBySectionName(@RequestParam(name = "sectionName")String sectionName,
-                                                    @RequestParam(name = "numberOfDays")Integer numberOfDays)
-    {
-        return ResponseEntity.ok().body(batchService.findAllBySectionName(sectionName, numberOfDays));
+                                                    @RequestParam(name = "numberOfDays")Integer numberOfDays, @RequestParam(name = "asc") String asc) {
+        return ResponseEntity.ok().body(batchService.findAllBySectionName(sectionName, numberOfDays, asc));
     }
-
-
 }
