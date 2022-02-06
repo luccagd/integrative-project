@@ -6,8 +6,11 @@ import com.fasterxml.jackson.annotation.JsonKey;
 import com.meli.bootcamp.integrativeproject.enums.CartStatus;
 import jdk.jfr.Timestamp;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -27,15 +30,16 @@ public class Cart {
     @Column(name = "status", nullable = false)
     private CartStatus status = CartStatus.ABERTO;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<CartProduct> cartsProducts;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "buyer_id", referencedColumnName = "id")
     private Buyer buyer;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     @JsonIgnore
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt;
 }

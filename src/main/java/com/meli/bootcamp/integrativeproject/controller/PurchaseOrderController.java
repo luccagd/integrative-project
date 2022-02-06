@@ -1,7 +1,6 @@
 package com.meli.bootcamp.integrativeproject.controller;
 
 import com.meli.bootcamp.integrativeproject.dto.request.PurchaseOrderRequest;
-import com.meli.bootcamp.integrativeproject.service.InboundOrderService;
 import com.meli.bootcamp.integrativeproject.service.PurchaseOrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +16,12 @@ public class PurchaseOrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> postPurchaseOrder(@RequestBody PurchaseOrderRequest request){
+    public ResponseEntity<Object> save(@RequestBody PurchaseOrderRequest request){
         return ResponseEntity.ok().body(purchaseOrderService.save(request));
     }
 
     @PutMapping
-    public ResponseEntity<Object> putCartProducts(@RequestParam(name = "idOrder") Long id, @RequestBody PurchaseOrderRequest request) {
-        return ResponseEntity.ok().body(purchaseOrderService.put(id, request));
+    public ResponseEntity<Object> update(@RequestParam(name = "idOrder") Long id, @RequestBody PurchaseOrderRequest request) {
+        return ResponseEntity.ok().body(purchaseOrderService.update(request, id));
     }
 }
