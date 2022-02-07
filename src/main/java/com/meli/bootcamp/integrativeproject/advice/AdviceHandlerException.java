@@ -50,12 +50,21 @@ public class AdviceHandlerException {
                 .body(new ErrorMessage(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }*/
 
-    /*@ExceptionHandler(InvalidEnumException.class)
-    public ResponseEntity<ErrorMessage> handlerConversionFailedException(InvalidEnumException exception){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorMessage(exception.getMessage(), HttpStatus.BAD_REQUEST));
+    @ExceptionHandler(InvalidEnumException.class)
+    public ResponseEntity<AppErrorResponse> handlerConversionFailedException(InvalidEnumException exception) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+
+        AppErrorResponse errorResponse = new AppErrorResponse(
+                Date.from(Instant.now()),
+                badRequest.value(),
+                badRequest.name(),
+                exception.getMessage(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, badRequest);
     }
 
+    /*
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorMessage> handlerConversionFailedException(MissingServletRequestParameterException exception){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

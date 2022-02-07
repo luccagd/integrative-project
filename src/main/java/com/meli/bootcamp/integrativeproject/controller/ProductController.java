@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "/warehouse")
-    public ResponseEntity<Object> getProductQuantityByName(@RequestParam(name = "product_name") String name){
+    public ResponseEntity<Object> getProductQuantityByName(@RequestParam(name = "product_name") String name) {
         return ResponseEntity.ok().body(service.findAllByNameInWarehouse(name));
     }
 }

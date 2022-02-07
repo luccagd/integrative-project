@@ -104,12 +104,12 @@ public class ProductService {
         }
     }
 
-    public WarehouseProductResponse findAllByNameInWarehouse(String name){
+    public WarehouseProductResponse findAllByNameInWarehouse(String name) {
         List<WarehouseProductDTO> productDTOList = new ArrayList<>();
         WarehouseProductResponse response = new WarehouseProductResponse(name, productDTOList);
         List<ProductInWarehouse> productInWarehouseList = productRepository.findAllByNameInWarehousesIgnoreCase(name);
 
-        if(productInWarehouseList.isEmpty())
+        if (productInWarehouseList.isEmpty())
             throw new NotFoundException("Product not found".toUpperCase());
 
         productInWarehouseList.stream().forEach(productInWarehouse -> {
