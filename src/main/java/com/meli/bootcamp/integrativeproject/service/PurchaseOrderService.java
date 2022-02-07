@@ -34,6 +34,16 @@ public class PurchaseOrderService {
         this.warehouseSectionRepository = warehouseSectionRepository;
     }
 
+    public List<CartProduct> findByCartId(Long id) {
+        List<CartProduct> cartProducts = cartProductRepository.findByCartId(id);
+
+        if (cartProducts == null || cartProducts.isEmpty()) {
+            throw new NotFoundException("No orders were found for the given id");
+        }
+
+        return cartProducts;
+    }
+
     @Transactional
     public PurchaseOrderResponse save(PurchaseOrderRequest request) {
         AtomicReference<Double> cartTotalPrice = new AtomicReference<>(0.0);
@@ -53,25 +63,6 @@ public class PurchaseOrderService {
         return PurchaseOrderResponse.builder()
                 .totalPrice(BigDecimal.valueOf(cartTotalPrice.get()))
                 .build();
-    }
-
-    private List<CartProduct> addProductsToCart(List<PurchaseOrderProductRequest> productsRequest, Cart cart, AtomicReference<Double> totalPrice) {
-        return productsRequest.stream().map(requestProduct -> {
-            Product productInStock = productRepository.findById(requestProduct.getProductId()).get();
-            WarehouseSection warehouseSectionForProductInStock = warehouseSectionRepository.findWarehouseSectionByProductId(productInStock.getId());
-
-            Integer requestProductQuantity = requestProduct.getQuantity();
-
-            updateProductQuantityAndDecreaseTotalProducts(productInStock, warehouseSectionForProductInStock, requestProductQuantity);
-
-            totalPrice.updateAndGet(v -> v + (productInStock.getPrice() * requestProductQuantity));
-
-            return CartProduct.builder()
-                    .cart(cart)
-                    .product(productInStock)
-                    .quantity(requestProductQuantity)
-                    .build();
-        }).collect(Collectors.toList());
     }
 
     @Transactional
@@ -121,6 +112,25 @@ public class PurchaseOrderService {
         return PurchaseOrderResponse.builder()
                 .totalPrice(BigDecimal.valueOf(cartTotalPrice.get()))
                 .build();
+    }
+
+    private List<CartProduct> addProductsToCart(List<PurchaseOrderProductRequest> productsRequest, Cart cart, AtomicReference<Double> totalPrice) {
+        return productsRequest.stream().map(requestProduct -> {
+            Product productInStock = productRepository.findById(requestProduct.getProductId()).get();
+            WarehouseSection warehouseSectionForProductInStock = warehouseSectionRepository.findWarehouseSectionByProductId(productInStock.getId());
+
+            Integer requestProductQuantity = requestProduct.getQuantity();
+
+            updateProductQuantityAndDecreaseTotalProducts(productInStock, warehouseSectionForProductInStock, requestProductQuantity);
+
+            totalPrice.updateAndGet(v -> v + (productInStock.getPrice() * requestProductQuantity));
+
+            return CartProduct.builder()
+                    .cart(cart)
+                    .product(productInStock)
+                    .quantity(requestProductQuantity)
+                    .build();
+        }).collect(Collectors.toList());
     }
 
     private void updateProductQuantityAndDecreaseTotalProducts(Product product, WarehouseSection warehouseSection, Integer quantity) {

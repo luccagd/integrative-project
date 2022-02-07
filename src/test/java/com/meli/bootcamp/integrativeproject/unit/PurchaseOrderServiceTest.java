@@ -311,4 +311,34 @@ public class PurchaseOrderServiceTest {
         assertEquals(9, fakeCart.getCartsProducts().get(1).getProduct().getQuantity());
         assertEquals(16, fakeWarehouseSection.getTotalProducts());
     }
+
+    @Test
+    public void shouldBeThrowIfNoOrdersWereFoundForTheCartId() {
+        Long notExistentCartId = 999L;
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> service.findByCartId(notExistentCartId));
+
+        assertEquals("No orders were found for the given id", exception.getMessage());
+    }
+
+    @Test
+    public void shouldBeReturnListOfCartProductsIfOrdersWereFoundForTheCartId() {
+        Long existentCartId = 1L;
+
+        listOfFakeProducts.get(0).setId(1L);
+        listOfFakeProducts.get(0).setName("Salsicha");
+        listOfFakeCartsProducts.get(0).setProduct(listOfFakeProducts.get(0));
+
+        listOfFakeProducts.get(1).setId(2L);
+        listOfFakeProducts.get(1).setName("Frango");
+        listOfFakeCartsProducts.get(1).setProduct(listOfFakeProducts.get(1));
+
+        when(cartProductRepository.findByCartId(anyLong())).thenReturn(listOfFakeCartsProducts);
+
+        var response = service.findByCartId(existentCartId);
+
+        assertEquals(2, response.size());
+        assertEquals("Salsicha", response.get(0).getProduct().getName());
+        assertEquals("Frango", response.get(1).getProduct().getName());
+    }
 }

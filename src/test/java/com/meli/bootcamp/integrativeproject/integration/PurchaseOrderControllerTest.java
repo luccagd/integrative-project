@@ -18,8 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -166,8 +165,7 @@ public class PurchaseOrderControllerTest {
 
     @Test
     @Order(8)
-    public void shouldBeReturns200IfUpdatedSuccessfullyPurchaseOrder() throws Exception {
-        // String httpRequestForCreateCart = "{\"buyerId\":1,\"date\":\"02-02-2022\",\"status\":\"ABERTO\",\"products\":[{\"productId\":1,\"quantity\":4},{\"productId\":2,\"quantity\":3}]}";
+    public void shouldBeReturns200IfUpdatedSuccessfullyPurchaseOrderAndDecreaseTotalProducts() throws Exception {
         String httpRequestForUpdateCart = "{\"buyerId\":1,\"products\":[{\"productId\":1,\"quantity\":8},{\"productId\":2,\"quantity\":9}]}";
 
         this.mockMvc
@@ -189,5 +187,42 @@ public class PurchaseOrderControllerTest {
         assertEquals(43, createdWarehouseSection.getTotalProducts());
         assertEquals(12, product1.getQuantity());
         assertEquals(11, product2.getQuantity());
+    }
+
+    @Test
+    @Order(9)
+    public void shouldBeReturns200IfUpdatedSuccessfullyPurchaseOrderAndIncreaseTotalProducts() throws Exception {
+        String httpRequestForUpdateCart = "{\"buyerId\":1,\"products\":[{\"productId\":1,\"quantity\":3},{\"productId\":2,\"quantity\":1}]}";
+
+        this.mockMvc
+                .perform(put("/fresh-products/orders")
+                        .param("idOrder", "1")
+                        .content(httpRequestForUpdateCart)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalPrice").value("" + BigDecimal.valueOf((3 * 12.35) + (1 * 18.90))));
+
+        CartProduct createdCartProduct1 = cartProductRepository.findByCart_IdAndProduct_Id(1L, 1L);
+        CartProduct createdCartProduct2 = cartProductRepository.findByCart_IdAndProduct_Id(1L, 2L);
+        WarehouseSection createdWarehouseSection = warehouseSectionRepository.findById(1L).get();
+        Product product1 = productRepository.findById(1L).get();
+        Product product2 = productRepository.findById(2L).get();
+
+        assertEquals(3, createdCartProduct1.getQuantity());
+        assertEquals(1, createdCartProduct2.getQuantity());
+        assertEquals(56, createdWarehouseSection.getTotalProducts());
+        assertEquals(17, product1.getQuantity());
+        assertEquals(19, product2.getQuantity());
+    }
+
+    @Test
+    @Order(10)
+    public void shouldBeReturns200WithListOfCartProducts() throws Exception {
+        this.mockMvc
+                .perform(get("/fresh-products/orders/{idOrder}", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].product.name").value("Salsicha"))
+                .andExpect(jsonPath("$[1].product.name").value("Frango"));
     }
 }
