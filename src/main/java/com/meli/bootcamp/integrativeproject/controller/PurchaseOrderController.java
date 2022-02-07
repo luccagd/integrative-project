@@ -17,7 +17,7 @@ public class PurchaseOrderController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody PurchaseOrderRequest request){
-        return ResponseEntity.ok().body(purchaseOrderService.save(request));
+        return ResponseEntity.created(null).body(purchaseOrderService.save(request));
     }
 
     @PutMapping
