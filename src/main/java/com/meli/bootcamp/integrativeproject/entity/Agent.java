@@ -25,4 +25,7 @@ public class Agent {
     @JoinColumn(name = "warehouse_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Warehouse warehouse;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private User user;
 }

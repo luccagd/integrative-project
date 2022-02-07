@@ -26,4 +26,7 @@ public class Buyer {
     @OneToMany(mappedBy = "buyer")
     @JsonIgnore
     private List<Cart> carts;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private User user;
 }

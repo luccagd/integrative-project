@@ -27,4 +27,7 @@ public class Seller {
     @OneToMany(mappedBy = "seller")
     @JsonIgnoreProperties(value = "seller")
     private List<WarehouseSellers> warehouseSellers;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private User user;
 }
