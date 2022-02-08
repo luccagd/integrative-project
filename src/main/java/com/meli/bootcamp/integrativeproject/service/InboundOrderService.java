@@ -15,6 +15,7 @@ import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
 import com.meli.bootcamp.integrativeproject.utils.GenerateRandomNumber;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public class InboundOrderService {
         this.sellerRepository = sellerRepository;
     }
 
+    @Transactional
     public InboundOrderResponseDTO save(InboundOrderRequestDTO inboundOrderRequestDTO, Long agentId) {
         doValidations(inboundOrderRequestDTO, agentId);
 
@@ -132,6 +134,7 @@ public class InboundOrderService {
         ).findAny().get();
     }
 
+    @Transactional
     public BatchResponseDTO update(ProductRequestDTO productRequestDTO, Long inboundOrderId, Long productId) {
         doUpdateValidations(productRequestDTO, inboundOrderId, productId);
 
