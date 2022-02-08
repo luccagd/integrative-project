@@ -1,5 +1,6 @@
 package com.meli.bootcamp.integrativeproject.mocks;
 
+import com.meli.bootcamp.integrativeproject.entity.Batch;
 import com.meli.bootcamp.integrativeproject.entity.Product;
 
 import java.util.ArrayList;
@@ -18,5 +19,13 @@ public class ProductsServiceMocks {
         }
 
         return listOfProducts;
+    }
+
+    public static Batch makeFakeBatch() {
+        return Batch.builder()
+                .warehouse(null)
+                .section(null)
+                .products(null)
+                .build();
     }
 }
