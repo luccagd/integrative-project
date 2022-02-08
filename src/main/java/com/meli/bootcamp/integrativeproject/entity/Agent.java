@@ -1,9 +1,15 @@
 package com.meli.bootcamp.integrativeproject.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meli.bootcamp.integrativeproject.auth.model.Usuario;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +18,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "agents")
-public class Agent {
+public class Agent extends Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +32,11 @@ public class Agent {
     @JsonIgnore
     private Warehouse warehouse;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
-    private User user;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("AGENT"));
+        return authorities;
+    }
+
 }

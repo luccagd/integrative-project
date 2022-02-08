@@ -30,7 +30,7 @@ public class InboundOrderServiceMocks {
     }
 
     public static Seller makeFakeSeller() {
-        return new Seller(1L, "João", null, null, null);
+        return new Seller(1L, "João", null, null);
     }
 
     public static Warehouse makeFakeWarehouse() {
@@ -38,7 +38,7 @@ public class InboundOrderServiceMocks {
     }
 
     public static Agent makeFakeAgent() {
-        return new Agent(1L, "Maria", null, null);
+        return new Agent(1L, "Maria", null);
     }
 
     public static WarehouseSection makeFakeWarehouseSection() {
