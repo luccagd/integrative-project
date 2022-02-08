@@ -17,17 +17,17 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class Usuario implements UserDetails, GrantedAuthority{
 
-    private String usuario;
+    private String userName;
 
-    private String senha;
+    private String password;
 
     public Usuario() {
     }
 
-    public Usuario(String usuario, String senha) {
+    public Usuario(String userName, String password) {
         super();
-        this.usuario = usuario;
-        this.senha = senha;
+        this.userName = userName;
+        this.password = password;
     }
 
     @Override
@@ -46,13 +46,13 @@ public class Usuario implements UserDetails, GrantedAuthority{
     @Override
     public String getPassword() {
         // TODO Auto-generated method stub
-        return this.senha;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
         // TODO Auto-generated method stub
-        return this.usuario;
+        return this.userName;
     }
 
     @Override

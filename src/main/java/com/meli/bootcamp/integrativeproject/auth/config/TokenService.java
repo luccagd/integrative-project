@@ -30,7 +30,7 @@ public class TokenService {
 
         return Jwts.builder()
                 .setIssuer("Nossa APP")
-                .setSubject(usuarioLogado.getUsuario())
+                .setSubject(usuarioLogado.getUsername())
                 .setIssuedAt(hoje)
                 .setExpiration(expiracao)
                 .signWith(SignatureAlgorithm.HS256, secret)

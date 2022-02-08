@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.meli.bootcamp.integrativeproject.auth.model.Usuario;
-import com.meli.bootcamp.integrativeproject.entity.Buyer;
-import com.meli.bootcamp.integrativeproject.entity.Seller;
 import com.meli.bootcamp.integrativeproject.repositories.AgentRepository;
 import com.meli.bootcamp.integrativeproject.repositories.BuyerRepository;
 import com.meli.bootcamp.integrativeproject.repositories.SellerRepository;
@@ -59,13 +57,13 @@ public class AutenticacaoViaTokenFilter extends OncePerRequestFilter{
     private void realizaAutenticacaoDoTokenNoSpring(String token) {
         String userName = tokenService.getUsername(token);
 
-        Usuario usuario = this.agentRepository.findByUsuario(userName);
+        Usuario usuario = this.agentRepository.findByUserName(userName);
         if (usuario == null) {
-            usuario = this.sellerRepository.findByUsuario(userName);
+            usuario = this.sellerRepository.findByUserName(userName);
         }
 
         if (usuario == null) {
-            usuario = this.buyerRepository.findByUsuario(userName);
+            usuario = this.buyerRepository.findByUserName(userName);
         }
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());

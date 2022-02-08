@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BuyerRepository extends JpaRepository<Buyer, Long> {
 
-    Buyer findByUsuario(String usuario);
+    Buyer findByUserName(String usuario);
 }
