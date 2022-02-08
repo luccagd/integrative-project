@@ -110,7 +110,7 @@ public class ProductService {
         List<ProductInWarehouse> productInWarehouseList = productRepository.findAllByNameInWarehousesIgnoreCase(name);
 
         if (productInWarehouseList.isEmpty())
-            throw new NotFoundException("Product not found".toUpperCase());
+            throw new NotFoundException("Product not found");
 
         productInWarehouseList.stream().forEach(productInWarehouse -> {
             productDTOList.add(WarehouseProductDTO.builder()

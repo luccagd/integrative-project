@@ -15,9 +15,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class ProductServiceTest {
@@ -207,5 +209,30 @@ public class ProductServiceTest {
         assertEquals("Frango", response.get(1).getName());
     }
 
+    @Test
+    public void shouldBeThrowIfProductNotFound() {
+        String productNameNotExistent = "Pão";
 
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> service.findAllByNameInWarehouse(productNameNotExistent));
+
+        assertEquals("Product not found", exception.getMessage());
+    }
+
+    @Test
+    public void shouldBeReturnsListOfAllProductsByNameInWarehouse() {
+        String productNameExistent = "Salsicha";
+
+        var fakeProductInWarehouse1 = ProductsServiceMocks.makeFakeProductInWarehouse(22, 1L, "Salsicha");
+        var fakeProductInWarehouse2 = ProductsServiceMocks.makeFakeProductInWarehouse(33, 2L, "Salsicha");
+
+        when(productRepository.findAllByNameInWarehousesIgnoreCase(anyString())).thenReturn(Arrays.asList(fakeProductInWarehouse1, fakeProductInWarehouse2));
+
+        var response = service.findAllByNameInWarehouse(productNameExistent);
+
+        assertEquals("Salsicha", response.getProductId());
+        assertEquals(1, response.getProductsDTO().get(0).getWarehouseCode());
+        assertEquals(22, response.getProductsDTO().get(0).getTotalQuantity());
+        assertEquals(2, response.getProductsDTO().get(1).getWarehouseCode());
+        assertEquals(33, response.getProductsDTO().get(1).getTotalQuantity());
+    }
 }

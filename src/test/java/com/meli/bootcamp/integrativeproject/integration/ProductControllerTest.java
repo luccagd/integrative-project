@@ -169,6 +169,29 @@ public class ProductControllerTest {
 
     @Test
     @Order(10)
+    public void shouldBeReturns404IfProductNameNotFoundInWarehouse() throws Exception {
+        this.mockMvc
+                .perform(get("/fresh-products/warehouse")
+                        .param("product_name", "PRODUCT_NAME_NOT_EXISTENT")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Product not found"));
+    }
+
+    @Test
+    @Order(11)
+    public void shouldBeReturns200WithListOfProductsFilteredByNameInWarehouse() throws Exception {
+        this.mockMvc
+                .perform(get("/fresh-products/warehouse")
+                        .param("product_name", "Salsicha")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.productId").value("Salsicha"))
+                .andExpect(jsonPath("$.warehouses[0].totalQuantity").value("21"));
+    }
+
+    @Test
+    @Order(12)
     public void shouldBeReturns404IfNoProductsWereFound() throws Exception {
         productRepository.deleteAll();
 
@@ -180,7 +203,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    @Order(11)
+    @Order(13)
     public void shouldBeReturns404IfNoProductsFoundForTheGivenCategory() throws Exception {
         this.mockMvc
                 .perform(get("/fresh-products/list/byCategory")
