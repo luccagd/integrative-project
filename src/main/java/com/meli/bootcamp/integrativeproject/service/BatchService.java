@@ -20,36 +20,36 @@ public class BatchService {
         this.batchRepository = batchRepository;
     }
 
-
     public BatchSectionNameResponse findAllBySectionName(String sectionName, Integer numberOfDays, String asc) {
         ascResponse(asc.toLowerCase());
+
         List<BatchResponse> batchResponseList = batchRepository.findAllBySectionNameAndDueDate(responseSectionName(sectionName));
         List<BatchStock> batchStockList = new ArrayList<>();
 
-        if(numberOfDays < 0)
-            throw new BusinessException("number of days cannot be less than 0".toUpperCase());
+        if (numberOfDays < 0)
+            throw new BusinessException("number of days cannot be less than 0");
 
-        batchResponseList.stream().forEach(batchResponse ->{
-            if (batchResponse.getDatediff() >= 0 && batchResponse.getDatediff() <= numberOfDays){
-                    BatchStock batchStock = BatchStock.builder()
-                                                      .batchNumber(batchResponse.getBatch_number())
-                                                      .productId(batchResponse.getProduct_id())
-                                                      .productTypeId(batchResponse.getProduct_category())
-                                                      .dueDate(batchResponse.getDue_date())
-                                                      .quantity(batchResponse.getQuantity())
-                                                      .build();
-                    batchStockList.add(batchStock);
-        }});
+        batchResponseList.stream().forEach(batchResponse -> {
+            if (batchResponse.getDatediff() >= 0 && batchResponse.getDatediff() <= numberOfDays) {
+                BatchStock batchStock = BatchStock.builder()
+                        .batchNumber(batchResponse.getBatch_number())
+                        .productId(batchResponse.getProduct_id())
+                        .productTypeId(batchResponse.getProduct_category())
+                        .dueDate(batchResponse.getDue_date())
+                        .quantity(batchResponse.getQuantity())
+                        .build();
+                batchStockList.add(batchStock);
+            }
+        });
 
-        if(asc.equals("true"))
+        if (asc.equals("true"))
             batchStockList.sort(Comparator.comparing(BatchStock::getDueDate));
 
         return BatchSectionNameResponse.builder()
                 .batchStock(batchStockList).build();
     }
 
-
-    public String responseSectionName(String sectionName){
+    public String responseSectionName(String sectionName) {
         sectionName = sectionName.toUpperCase();
         switch (sectionName) {
             case "FS":
@@ -62,17 +62,17 @@ public class BatchService {
                 sectionName = "CONGELADO";
                 break;
             default:
-                throw new BusinessException(String.format("Section %s not found",sectionName).toUpperCase());
+                throw new BusinessException("Section " + sectionName + " not found");
         }
         return sectionName;
     }
 
     public void ascResponse(String asc) throws BusinessException {
-        if(asc == null | asc.equals(""))
+        if (asc == null | asc.equals(""))
             asc = "false";
 
-        if(!(asc.equals("true")) & !(asc.equals("false"))) {
-            throw new BusinessException("asc can only be true or false".toUpperCase());
+        if (!(asc.equals("true")) & !(asc.equals("false"))) {
+            throw new BusinessException("asc can only be true or false");
         }
 
     }

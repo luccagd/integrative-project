@@ -17,15 +17,20 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
             " DATEDIFF(day, CURRENT_DATE, p.DUE_DATE) AS DATEDIFF  " +
             "FROM BATCHES B JOIN PRODUCTS P  ON (P.BATCH_ID = B.ID) JOIN SECTIONS S ON (B.SECTION_ID = S.id) " +
             "WHERE P.CATEGORY = :sectionName GROUP BY P.DUE_DATE, B.BATCH_NUMBER, B.ID ORDER BY B.BATCH_NUMBER"
-             ,nativeQuery = true)
+            , nativeQuery = true)
     List<BatchResponse> findAllBySectionNameAndDueDate(@Param("sectionName") String sectionName);
 
-    interface BatchResponse{
+    interface BatchResponse {
         Integer getBatch_number();
+
         Long getProduct_id();
+
         String getProduct_category();
+
         LocalDate getDue_date();
+
         Integer getQuantity();
+
         Integer getDatediff();
     }
 }
