@@ -7,6 +7,8 @@ import com.meli.bootcamp.integrativeproject.service.AgentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/agent")
 public class AgentController {
@@ -15,6 +17,13 @@ public class AgentController {
 
     public AgentController(AgentService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AgentResponseDTO>> findAll() {
+        List<Agent> agents = service.findAll();
+
+        return ResponseEntity.ok(AgentResponseDTO.entityListToDtoList(agents));
     }
 
     @GetMapping("/{agentId}")

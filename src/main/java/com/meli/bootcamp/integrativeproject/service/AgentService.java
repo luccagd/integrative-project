@@ -10,6 +10,8 @@ import com.meli.bootcamp.integrativeproject.repositories.WarehouseRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AgentService {
 
@@ -20,6 +22,15 @@ public class AgentService {
     public AgentService(AgentRepository agentRepository, WarehouseRepository warehouseRepository) {
         this.agentRepository = agentRepository;
         this.warehouseRepository = warehouseRepository;
+    }
+
+    public List<Agent> findAll() {
+        List<Agent> agents = agentRepository.findAll();
+        if (agents == null || agents.isEmpty()) {
+            throw new NotFoundException("No Agents were found");
+        }
+
+        return agents;
     }
 
     public Agent findById(Long id) {

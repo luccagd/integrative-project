@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -30,5 +33,9 @@ public class AgentResponseDTO {
                 .warehouseId(agent.getWarehouse().getId())
                 .warehouseName(agent.getWarehouse().getName())
                 .build();
+    }
+
+    public static List<AgentResponseDTO> entityListToDtoList(List<Agent> agents) {
+        return agents.stream().map(agent -> toDTO(agent)).collect(Collectors.toList());
     }
 }
