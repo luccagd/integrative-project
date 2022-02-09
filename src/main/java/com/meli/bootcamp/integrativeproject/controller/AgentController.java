@@ -5,10 +5,7 @@ import com.meli.bootcamp.integrativeproject.dto.response.AgentResponseDTO;
 import com.meli.bootcamp.integrativeproject.entity.Agent;
 import com.meli.bootcamp.integrativeproject.service.AgentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/agent")
@@ -23,6 +20,13 @@ public class AgentController {
     @PostMapping
     public ResponseEntity<AgentResponseDTO> save(@RequestBody AgentRequestDTO agentRequestDTO) {
         Agent agent = service.save(agentRequestDTO);
+
+        return ResponseEntity.ok(AgentResponseDTO.toDTO(agent));
+    }
+
+    @PutMapping("/{agentId}")
+    public ResponseEntity<AgentResponseDTO> update(@RequestBody AgentRequestDTO agentRequestDTO, @PathVariable Long agentId) {
+        Agent agent = service.update(agentRequestDTO, agentId);
 
         return ResponseEntity.ok(AgentResponseDTO.toDTO(agent));
     }
