@@ -17,6 +17,13 @@ public class AgentController {
         this.service = service;
     }
 
+    @GetMapping("/{agentId}")
+    public ResponseEntity<AgentResponseDTO> findById(@PathVariable Long agentId) {
+        Agent agent = service.findById(agentId);
+
+        return ResponseEntity.ok(AgentResponseDTO.toDTO(agent));
+    }
+
     @PostMapping
     public ResponseEntity<AgentResponseDTO> save(@RequestBody AgentRequestDTO agentRequestDTO) {
         Agent agent = service.save(agentRequestDTO);
