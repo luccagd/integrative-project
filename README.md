@@ -228,31 +228,3 @@
 </details>
 
 <br>
-
-## ⚔️ Requisito 06
-
-`ml-find-batches-by-seller-01`
-
-**Descrição:** consultar os lotes que estão vinculados a um vendedor.
-
-✅ **GET** `/api/v1/fresh-products/batch?sellerId={sellerId}`
-
-<details>
-  <summary>Detalhes da requisição</summary>
-  
-  Request Header
-  ```json
-  {
-      "agentId": "Long"
-  } 
-  ```
-        
-  Request Param
-  ```json
-  {
-    "sellerId": "Long"
-  } 
-  ```
-</details>
-
-<br>
