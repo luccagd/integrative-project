@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "0657ce3b-e308-48fd-be48-c38048be7293",
+		"name": "Integrative Project - Req 06",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Req 06 - CRUD de Agent",
+			"item": [
+				{
+					"name": "Busca todos os representantes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOb3NzYSBBUFAiLCJzdWIiOiJsdWNjYSIsImlhdCI6MTY0NDQzNjE3MSwiZXhwIjoxNjQ0NTIyNTcxfQ.5z2KhPUlqjI9uaBjVqwl4T3AG_wlClo8h0O8sKb_4yw",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/agent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"agent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca representante por id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOb3NzYSBBUFAiLCJzdWIiOiJsdWNjYSIsImlhdCI6MTY0NDQzMjMyNiwiZXhwIjoxNjQ0NTE4NzI2fQ.QW9aj1iR1v56Snn1pF_2La7IVBTKznHvZOMJVgokedQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/agent/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"agent",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastra novo representante",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Lucca\",\n    \"userName\": \"lucca\",\n    \"password\": \"lucca123\",\n    \"warehouseId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/agent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"agent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Altera representante pelo id",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOb3NzYSBBUFAiLCJzdWIiOiJhYmNkZSIsImlhdCI6MTY0NDQzMDg2MywiZXhwIjoxNjQ0NTE3MjYzfQ.ve6uVjDmXIB70RSe8s4MzXyBe5HECZeo-zGRTxWvu3A",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Lucas\",\n    \"userName\": \"lcs\",\n    \"password\": \"1234tst\",\n    \"warehouseId\": 4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/agent/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"agent",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
